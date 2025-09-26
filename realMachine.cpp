@@ -1,8 +1,8 @@
 #include <iostream>
 
+#include "virtualMachine.h"
 
-class realMachine
-{
+class realMachine{
     private:
         uint32 RAX;
         uint32 RBX;
@@ -15,7 +15,9 @@ class realMachine
         uint8 SI;
         uint8 SF;
         uint32 PTR;
+        virtualMachine virtualiMasina;
     public:
         realMachine(/* args */);
         ~realMachine();
+        translateLocalAdrressToRealAdrress();
 };
