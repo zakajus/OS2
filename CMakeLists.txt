@@ -3,4 +3,5 @@ project(OS2)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(OS2 main.cpp)
+add_executable(OS2 main.cpp
+        channelDevice.cpp)
