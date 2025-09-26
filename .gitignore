@@ -1,5 +1,19 @@
-bin/
-obj/
-/packages/
-riderModule.iml
-/_ReSharper.Caches/
+CMakeCache.txt
+cmake_install.cmake
+build.ninja
+rules.ninja
+CMakeConfigureLog.yaml
+CMakeSystem.cmake
+CMakeScratch/
+CXXModules.json
+CXXDependInfo.json
+*.o
+*.ddi
+*.modmap
+
+# CLion logs and environment
+clion-Debug-log.txt
+clion-environment.txt
+
+# Test logs
+Testing/
