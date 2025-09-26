@@ -8,7 +8,7 @@ class realMachine
         uint32 RBX;
         uint8 MODE;
         uint16 DS;
-        uint16 ES;
+        uint16 CS;
         uint16 PC;
         uint16 TI;
         uint8 DI;
