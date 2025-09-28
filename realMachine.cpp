@@ -33,7 +33,11 @@ class realMachine{
             }
         }
         ~realMachine();
-        translateLocalAdrressToRealAdrress();
+        int translateLocalAdrressToRealAddress(uint8 x, uint8 y){ //Miegodama rasiau tai reik patikrint kai busiu zvalaus proto
+            uint32 pageTable[16] = userMemory[PTR*16];
+            int realAddress = pageTable[x] * 16 + y;
+            return realAddress;
+        }
 
         void allocateMemoryForVirtualMachineVectors(){
             int temp[17];
@@ -48,7 +52,6 @@ class realMachine{
         }
 
         void allocateMemoryForVirtualMachine(){
-            //ar geriau daryt du vektorius, kuriu vienas pradzioje tuscias, kitame skaiciai nuo 0 iki 101 ir tik is jo renkames blokus
             int temp[17];
             srand(time(0));
             int randomNumber;
