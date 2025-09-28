@@ -20,4 +20,48 @@ class realMachine{
         realMachine(/* args */);
         ~realMachine();
         translateLocalAdrressToRealAdrress();
+        test_(){
+            if(SI > 0){
+                switch (SI):
+                    case 1:
+                        //HALT
+                        break;
+                    case 2:
+                        //READ
+                        break;
+                    case 3:
+                        //PNUM
+                        break;
+                    case 4:
+                        //PTXT
+                        break;
+                    case 5:
+                        //EXEx
+                        break;
+                    default:
+                        break;
+                
+            }
+            if(PI > 0){
+                switch (PI):
+                    case 1:
+                        //wrong address
+                        break;
+                    case 2:
+                        //wrong operation code
+                        break;
+                    case 3:
+                        //wrong inicialization/assignment
+                        break;
+                    case 4:
+                        // division from 0
+                        break;
+                    default:
+                        break;
+                
+            }
+            if(TI == 0){
+                //change to other program
+            }
+        }
 };
