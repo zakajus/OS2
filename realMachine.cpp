@@ -1,6 +1,10 @@
 #include <iostream>
+#include <ctime>
+#include <vector>
 
 #include "virtualMachine.h"
+
+using namespace std;
 
 class realMachine{
     private:
@@ -16,13 +20,52 @@ class realMachine{
         uint8 SF;
         uint32 PTR;
         virtualMachine virtualiMasina;
-        uint32 userMemory[1632];
-        uint32 supervisorMemory[512]; //32 blokai po 16 žodžių
-        int userMemoryBlocks[102]; //0 - niekam nepriklauso, 1-6, kurios virtualios masinos blokas
+        uint32 userMemory[1632]; //102 blokai po 16 žodžių
+        uint32 supervisorMemory[512]; //32 blokai po 16 žodžių 
+        bool isUserMemoryBlockOccupied[102]; // true - užimtas, false - laisvas
+
+        vector<int> freeBlocks;
+        vector<int> occupiedBlocks;
     public:
-        realMachine(/* args */);
+        realMachine(/* args */){
+            for (int i = 0; i <= 101; ++i) {
+                freeBlocks.push_back(i);
+            }
+        }
         ~realMachine();
         translateLocalAdrressToRealAdrress();
+
+        void allocateMemoryForVirtualMachineVectors(){
+            int temp[17];
+            srand(time(0));
+            int randomNumber;
+            for(int i = 0; i < 17; ++i){
+                randomNumber = rand() % freeBlocks.size();
+                occupiedBlocks.push_back(randomNumber);
+                temp[i] = randomNumber;
+                freeBlocks.erase( remove(freeBlocks.begin(), freeBlocks.end(), randomNumber), freeBlocks.end());
+            }
+        }
+
+        void allocateMemoryForVirtualMachine(){
+            //ar geriau daryt du vektorius, kuriu vienas pradzioje tuscias, kitame skaiciai nuo 0 iki 101 ir tik is jo renkames blokus
+            int temp[17];
+            srand(time(0));
+            int randomNumber;
+            for(int i = 0; i < 17; ++i){
+                randomNumber = rand() % 102;
+                if(!isUserMemoryBlockOccupied[randomNumber]){
+                    isUserMemoryBlockOccupied[randomNumber] = true;
+                    temp[i] = randomNumber;
+                }
+                else{
+                    --i;
+                }
+            }  
+        }
+
+        
+
         void test_(){
             if(SI > 0){
                 switch (SI):
