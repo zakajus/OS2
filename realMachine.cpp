@@ -70,6 +70,7 @@ class realMachine{
         
 
         void test_(){
+            //pries iskvieciant paprogrames issaugoti registru reiksmes kazkur
             if(SI > 0){
                 switch (SI):
                     case 1:
@@ -89,7 +90,6 @@ class realMachine{
                         break;
                     default:
                         break;
-                
             }
             if(PI > 0){
                 switch (PI):
@@ -112,5 +112,6 @@ class realMachine{
             if(TI == 0){
                 //change to other program
             }
+            //atstatyti registru reiksmes
         }
 };
