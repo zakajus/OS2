@@ -16,11 +16,14 @@ class realMachine{
         uint8 SF;
         uint32 PTR;
         virtualMachine virtualiMasina;
+        uint32 userMemory[1632];
+        uint32 supervisorMemory[512]; //32 blokai po 16 žodžių
+        int userMemoryBlocks[102]; //0 - niekam nepriklauso, 1-6, kurios virtualios masinos blokas
     public:
         realMachine(/* args */);
         ~realMachine();
         translateLocalAdrressToRealAdrress();
-        test_(){
+        void test_(){
             if(SI > 0){
                 switch (SI):
                     case 1:
