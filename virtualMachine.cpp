@@ -24,8 +24,17 @@ class VirtualMachine
 
         }
 
-        void add(uint8 x, uint8 y);
-        void substract(uint8 x, uint8 y);
+        void add(uint8 x, uint8 y){
+             int realAddress = realMachine.translateLocalAdrressToRealAddress(x, y);
+             uint32 valueToAdd = getWordFromMemory(realAddress);
+             rax += valueToAdd;
+            //patikrint ar nebuvo overflow
+        }
+        void substract(uint8 x, uint8 y){
+            int realAddress = realMachine.translateLocalAdrressToRealAddress(x, y);
+            uint32 valueToSubstract = getWordFromMemory(realAddress);
+            rbx -= valueToSubstract;
+        }
         void multiply(uint8 x, uint8 y);
         void divide(uint8 x, uint8 y);
         void compare(){
