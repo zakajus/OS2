@@ -8,21 +8,21 @@ using namespace std;
 
 class realMachine{
     private:
-        uint32 RAX;
-        uint32 RBX;
-        uint8 MODE;
-        uint16 DS;
-        uint16 CS;
-        uint16 PC;
-        uint16 TI;
-        uint8 DI;
-        uint8 SI;
-        uint8 SF;
-        uint32 PTR;
+        uint32 rax;
+        uint32 rbx;
+        uint8 mode;
+        uint16 ds;
+        uint16 cs;
+        uint16 pc;
+        uint16 ti;
+        uint8 di;
+        uint8 si;
+        uint8 sf;
+        uint32 ptr;
         virtualMachine virtualiMasina;
         uint32 userMemory[1632]; //102 blokai po 16 žodžių
         uint32 supervisorMemory[512]; //32 blokai po 16 žodžių 
-        bool isUserMemoryBlockOccupied[102]; // true - užimtas, false - laisvas
+        //bool isUserMemoryBlockOccupied[102]; // true - užimtas, false - laisvas
 
         vector<int> freeBlocks;
         vector<int> occupiedBlocks;
@@ -33,13 +33,13 @@ class realMachine{
             }
         }
         ~realMachine();
-        int translateLocalAdrressToRealAddress(uint8 x, uint8 y){ //Miegodama rasiau tai reik patikrint kai busiu zvalaus proto
+        int translateLocalAdrressToRealAddress(uint8 x, uint8 y){
             uint32 pageTable[16] = userMemory[PTR*16];
             int realAddress = pageTable[x] * 16 + y;
             return realAddress;
         }
 
-        void allocateMemoryForVirtualMachineVectors(){
+        void allocateMemoryForVirtualMachine(){
             int temp[17];
             srand(time(0));
             int randomNumber;
@@ -51,28 +51,28 @@ class realMachine{
             }
         }
 
-        void allocateMemoryForVirtualMachine(){
-            int temp[17];
-            srand(time(0));
-            int randomNumber;
-            for(int i = 0; i < 17; ++i){
-                randomNumber = rand() % 102;
-                if(!isUserMemoryBlockOccupied[randomNumber]){
-                    isUserMemoryBlockOccupied[randomNumber] = true;
-                    temp[i] = randomNumber;
-                }
-                else{
-                    --i;
-                }
-            }  
-        }
+        // void allocateMemoryForVirtualMachine(){
+        //     int temp[17];
+        //     srand(time(0));
+        //     int randomNumber;
+        //     for(int i = 0; i < 17; ++i){
+        //         randomNumber = rand() % 102;
+        //         if(!isUserMemoryBlockOccupied[randomNumber]){
+        //             isUserMemoryBlockOccupied[randomNumber] = true;
+        //             temp[i] = randomNumber;
+        //         }
+        //         else{
+        //             --i;
+        //         }
+        //     }  
+        // }
 
         
 
         void test_(){
             //pries iskvieciant paprogrames issaugoti registru reiksmes kazkur
-            if(SI > 0){
-                switch (SI):
+            if(si > 0){
+                switch (si):
                     case 1:
                         //HALT
                         break;
@@ -91,8 +91,8 @@ class realMachine{
                     default:
                         break;
             }
-            if(PI > 0){
-                switch (PI):
+            if(pi > 0){
+                switch (pi):
                     case 1:
                         //wrong address
                         break;
@@ -109,7 +109,7 @@ class realMachine{
                         break;
                 
             }
-            if(TI == 0){
+            if(ti == 0){
                 //change to other program
             }
             //atstatyti registru reiksmes
