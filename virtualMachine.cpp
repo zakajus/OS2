@@ -30,6 +30,7 @@ class virtualMachine
         void saveFromAX(int x, int y);
         void saveFromBX(int x, int y);
         void execute(int x);
+        void runNextCommand();
         void readFromKeyboard();
         void printNumber();
         void printText();
