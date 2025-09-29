@@ -51,6 +51,15 @@ class realMachine{
             }
         }
 
+        uint32 getWordFromMemory(int number){
+            return userMemory[number];
+        }
+
+        void saveWordToMemory(int number, uint32 value){ //sita paziuret ar gerai
+            userMemory[number] = value;
+        }
+
+
         // void allocateMemoryForVirtualMachine(){
         //     int temp[17];
         //     srand(time(0));
