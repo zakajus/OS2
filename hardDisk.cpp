@@ -10,4 +10,7 @@ class HardDisk{
       HardDisk();
       ~HardDisk();
 
+    uint32 getWord(int number);
+    
+
 };
