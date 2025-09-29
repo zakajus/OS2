@@ -10,8 +10,17 @@ class virtualMachine
         uint16* pc;
         uint8* sf;
     public:
-        virtualMachine(/* args */);
-        ~virtualMachine();
+        virtualMachine(uint32 &rax, uint32 &rbx,  uint16 &ds, uint16 &cs, uint16 &pc, uint8 &sf){
+            this->rax = &rax;
+            this->rbx = &rbx;
+            this->ds = &ds;
+            this->cs = &cs;
+            this->pc = &pc;
+            this->sf = &sf;  
+        }
+        ~virtualMachine(){
+
+        }
 
         void add(int x, int y);
         void substract(int x, int y);
