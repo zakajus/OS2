@@ -3,12 +3,12 @@
 class virtualMachine
 {
     private:
-        uint32* RAX;
-        uint32* RBX;
-        uint16* DS;
-        uint16* CS;
-        uint16* PC;
-        uint8* SF;
+        uint32* rax;
+        uint32* rbx;
+        uint16* ds;
+        uint16* cs;
+        uint16* pc;
+        uint8* sf;
     public:
         virtualMachine(/* args */);
         ~virtualMachine();
