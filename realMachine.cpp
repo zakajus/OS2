@@ -17,7 +17,7 @@ class realMachine{
         uint16 ti;
         uint8 di;
         uint8 si;
-        uint8 sf;
+        StatusFlag sf;
         uint32 ptr;
         virtualMachine virtualiMasina;
         uint32 userMemory[1632]; //102 blokai po 16 žodžių
