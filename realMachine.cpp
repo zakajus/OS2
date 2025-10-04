@@ -22,8 +22,7 @@ class realMachine{
         virtualMachine virtualiMasina;
         uint32 userMemory[1632]; //102 blokai po 16 žodžių
         uint32 supervisorMemory[512]; //32 blokai po 16 žodžių 
-        //bool isUserMemoryBlockOccupied[102]; // true - užimtas, false - laisvas
-
+    
         vector<int> freeBlocks;
         vector<int> occupiedBlocks;
     public:
@@ -67,25 +66,6 @@ class realMachine{
         void saveWordToMemoryFromBx(int number){ //sita paziuret ar gerai
             userMemory[number] = rbx;
         }
-
-
-        // void allocateMemoryForVirtualMachine(){
-        //     int temp[17];
-        //     srand(time(0));
-        //     int randomNumber;
-        //     for(int i = 0; i < 17; ++i){
-        //         randomNumber = rand() % 102;
-        //         if(!isUserMemoryBlockOccupied[randomNumber]){
-        //             isUserMemoryBlockOccupied[randomNumber] = true;
-        //             temp[i] = randomNumber;
-        //         }
-        //         else{
-        //             --i;
-        //         }
-        //     }  
-        // }
-
-        
 
         void test_(){
             //pries iskvieciant paprogrames issaugoti registru reiksmes kazkur
