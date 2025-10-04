@@ -55,6 +55,11 @@ class realMachine{
             return userMemory[number];
         }
 
+        uint32 getNextWord(){
+            //implementuoooot
+            return 0;
+        }
+
         void saveWordToMemoryFromAx(int number){ //sita paziuret ar gerai
             userMemory[number] = rax;
         }
