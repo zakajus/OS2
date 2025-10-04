@@ -55,8 +55,12 @@ class realMachine{
             return userMemory[number];
         }
 
-        void saveWordToMemory(int number, uint32 value){ //sita paziuret ar gerai
-            userMemory[number] = value;
+        void saveWordToMemoryFromAx(int number){ //sita paziuret ar gerai
+            userMemory[number] = rax;
+        }
+
+        void saveWordToMemoryFromBx(int number){ //sita paziuret ar gerai
+            userMemory[number] = rbx;
         }
 
 
