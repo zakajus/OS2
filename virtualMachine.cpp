@@ -36,7 +36,7 @@ class VirtualMachine
             //patikrint ar nebuvo overflow
         }
         void substract(uint8 x, uint8 y){
-            int realAddress = realMachine.translateLocalAdrressToRealAddress(x, y);
+            int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
             uint32 valueToSubstract = realMachine->getWordFromMemory(realAddress);
             *rax -= valueToSubstract;
         }
