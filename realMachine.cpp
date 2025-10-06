@@ -1,6 +1,7 @@
 #include <iostream>
 #include <ctime>
 #include <vector>
+#include <cstdint>
 
 #include "virtualMachine.h"
 
@@ -8,20 +9,20 @@ using namespace std;
 
 class realMachine{
     private:
-        uint32 rax;
-        uint32 rbx;
-        uint8 mode;
-        uint16 ds;
-        uint16 cs;
-        uint16 pc;
-        uint16 ti;
-        uint8 di;
-        uint8 si;
+        uint32_t rax;
+        uint32_t rbx;
+        uint8_t mode;
+        uint16_t ds;
+        uint16_t cs;
+        uint16_t pc;
+        uint16_t ti;
+        uint8_t di;
+        uint8_t si;
         StatusFlag sf;
-        uint32 ptr;
+        uint32_t ptr;
         virtualMachine virtualiMasina;
-        uint32 userMemory[1632]; //102 blokai po 16 žodžių
-        uint32 supervisorMemory[512]; //32 blokai po 16 žodžių 
+        uint32_t userMemory[1632]; //102 blokai po 16 žodžių
+        uint32_t supervisorMemory[512]; //32 blokai po 16 žodžių 
     
         vector<int> freeBlocks;
         vector<int> occupiedBlocks;
@@ -32,8 +33,8 @@ class realMachine{
             }
         }
         ~realMachine();
-        int translateLocalAdrressToRealAddress(uint8 x, uint8 y){
-            uint32 pageTable[16] = userMemory[PTR*16];
+        int translateLocalAdrressToRealAddress(uint8_t x, uint8_t y){
+            uint32_t pageTable[16] = userMemory[PTR*16];
             int realAddress = pageTable[x] * 16 + y;
             return realAddress;
         }
@@ -62,11 +63,11 @@ class realMachine{
             }
         }
 
-        uint32 getWordFromMemory(int number){
+        uint32_t getWordFromMemory(int number){
             return userMemory[number];
         }
 
-        uint32 getNextWord(){
+        uint32_t getNextWord(){
             //implementuoooot
             return 0;
         }

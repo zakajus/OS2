@@ -11,15 +11,15 @@ struct StatusFlag{
 class VirtualMachine
 {
     private:
-        uint32* rax;
-        uint32* rbx;
-        uint16* ds;
-        uint16* cs;
-        uint16* pc;
+        uint8_t* rax;
+        uint8_t* rbx;
+        uint16_t* ds;
+        uint16_t* cs;
+        uint16_t* pc;
         StatusFlag* sf;
         RealMachine* realMachine;
     public:
-        VirtualMachine(uint32 &rax, uint32 &rbx,  uint16 &ds, uint16 &cs, uint16 &pc, StatusFlag &sf, RealMachine &realMachine){
+        VirtualMachine(uint8_t &rax, uint8_t &rbx,  uint16_t &ds, uint16_t &cs, uint16_t &pc, StatusFlag &sf, RealMachine &realMachine){
             this->rax = &rax;
             this->rbx = &rbx;
             this->ds = &ds;
@@ -28,27 +28,27 @@ class VirtualMachine
             this->sf = &sf;  
             this->realMachine = &realMachine;
         }
-        
-        void add(uint8 x, uint8 y){
+
+        void add(uint8_t x, uint8_t y){
              int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
-             uint32 valueToAdd = realMachine->getWordFromMemory(realAddress);
+             uint8_t valueToAdd = realMachine->getWordFromMemory(realAddress);
              *rax += valueToAdd;
             //patikrint ar nebuvo overflow
         }
-        void substract(uint8 x, uint8 y){
+        void substract(uint8_t x, uint8_t y){
             int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
-            uint32 valueToSubstract = realMachine->getWordFromMemory(realAddress);
+            uint8_t valueToSubstract = realMachine->getWordFromMemory(realAddress);
             *rax -= valueToSubstract;
         }
-        void multiply(uint8 x, uint8 y){
+        void multiply(uint8_t x, uint8_t y){
             int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
-            uint32 valueToMultiply = realMachine->getWordFromMemory(realAddress);
+            uint8_t valueToMultiply = realMachine->getWordFromMemory(realAddress);
             *rax *= valueToMultiply;
             //patikrint ar nebuvo overflow
         }
-        void divide(uint8 x, uint8 y){
+        void divide(uint8_t x, uint8_t y){
             int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
-            uint32 valueToDivideFrom = realMachine->getWordFromMemory(realAddress);
+            uint8_t valueToDivideFrom = realMachine->getWordFromMemory(realAddress);
             *rax /= valueToDivideFrom;
         }
         void compare(){
@@ -65,14 +65,14 @@ class VirtualMachine
             }
         }
         void and_(){
-            uint32 word = realMachine->getNextWord();
+            uint8_t word = realMachine->getNextWord();
             *rbx = *rax & word;
 
             sf->zf = (*rbx == 0) ? 1 : 0;  // Zero flag if result is 0
             sf->cf = 0; // CF is typically cleared for logical operations
         }
         void or_(){
-            uint32 word = realMachine->getNextWord();
+            uint8_t word = realMachine->getNextWord();
             *rbx = *rax | word;  // Bitwise OR, store result in RBX
             
             sf->zf = (*rbx == 0) ? 1 : 0;  // Zero flag if result is 0
@@ -84,46 +84,51 @@ class VirtualMachine
             sf->zf = (*rbx == 0) ? 1 : 0;
             sf->cf = 0;
         }
-        void jumpZero(uint8 x, uint8 y){
+        void jumpZero(uint8_t x, uint8_t y){
             if(sf->zf){
                 //hehe ka daryt
             }
         }
-        void jumpNotCarry(uint8 x, uint8 y); //pagalvot ar nereiks pakeist i jump not zero?
-        void jumpBelow(uint8 x, uint8 y){
+        void jumpNotCarry(uint8_t x, uint8_t y); //pagalvot ar nereiks pakeist i jump not zero?
+        void jumpBelow(uint8_t x, uint8_t y){
             if(sf->cf){
                 //hehe ka daryt
             }
         }
-        void jumpAbove(uint8 x, uint8 y){
+        void jumpAbove(uint8_t x, uint8_t y){
             if(!sf->zf && !sf->cf){
                 //hehe ka daryt
             }
         }
-        void moveToAX(uint8 x, uint8 y){
+        void moveToAX(uint8_t x, uint8_t y){
             int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
             *rax = realMachine->getWordFromMemory(realAddress);
         }
-        void moveToBX(uint8 x, uint8 y){
+        void moveToBX(uint8_t x, uint8_t y){
             int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
             *rbx = realMachine->getWordFromMemory(realAddress);
         }
-        void saveFromAX(uint8 x, uint8 y){ //patikrint
+        void saveFromAX(uint8_t x, uint8_t y){ //patikrint
             int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
             realMachine->saveWordToMemoryFromAx(realAddress);
         }
-        void saveFromBX(uint8 x, uint8 y){ //patikritn
+        void saveFromBX(uint8_t x, uint8_t y){ //patikrint
             int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
             realMachine->saveWordToMemoryFromBx(realAddress);
         }
-        void execute(uint8 x){
-            //Paleidžiama nauja programa, kurios failo pavadinimas yra nurodomas RBX registre. 
+        void execute(uint8_t x){
+            //Paleidžiama nauja programa, kurios failo pavadinimas yra nurodomas RBX registre.
             //Yra galimybe paduoti bent vieną bloką duomenu programai kaip parametrą. Baitas x nurodo parametru˛ bloką.
         }
-        void runNextCommand();
+        void runNextCommand(uint8_t code){
+			switch(code){
+				case
+			}
+		}
         void readFromKeyboard();
         void printNumber();
         void printText();
+
 
 
 };

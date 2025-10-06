@@ -1,12 +1,14 @@
+#include <cstdint>
+
 class ChannelDevice {
 private:
-    uint16 sb;
-    uint16 db;
-    uint32 off;
-    uint32 rnum;
-    uint32 name;
-    uint8 st;
-    uint8 dt;
+    uint16_t sb;
+    uint16_t db;
+    uint32_t off;
+    uint32_t rnum;
+    uint32_t name;
+    uint8_t st;
+    uint8_t dt;
 
 public:
     ChannelDevice(/* args */);

@@ -5,4 +5,6 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(OS2 main.cpp
         channelDevice.cpp
-        virtualMachine.cpp)
+        virtualMachine.cpp
+        realMachine.cpp
+        hardDisk.cpp)
