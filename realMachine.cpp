@@ -38,6 +38,18 @@ class realMachine{
             return realAddress;
         }
 
+        void printAllRegisterValues();
+        void printCurrentPage();
+        void printVirtualMemory();
+        void printRealMemory();
+
+//Vartotojo sąsajoje turi būti komandų atlikimo demonstracija bei visų VM komponentų būsenų kaita vykdant programą žingsniniu režimu.
+//Registrų reikšmės.
+//Sekanti vykdoma komanda.
+//Išorinių įrenginių būsenos.
+//Vykdomos komandos VM puslapio reikšmės.
+
+
         void allocateMemoryForVirtualMachine(){
             int temp[17];
             srand(time(0));
