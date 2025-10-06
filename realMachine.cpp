@@ -34,7 +34,7 @@ class realMachine{
         }
         ~realMachine();
         int translateLocalAdrressToRealAddress(uint8 x, uint8 y){
-            uint32 pageTable[16] = userMemory[PTR*16];
+            uint32 pageTable[16] = userMemory[ptr*16];
             int realAddress = pageTable[x] * 16 + y;
             return realAddress;
         }
