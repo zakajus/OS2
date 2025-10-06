@@ -54,6 +54,14 @@ class realMachine{
 //Išorinių įrenginių būsenos.
 //Vykdomos komandos VM puslapio reikšmės.
 
+        void changeSI(int i){
+            si = i;
+        }
+
+        void changePI(int i){
+            pi = i;
+        }
+
 
         void allocateMemoryForVirtualMachine(){
             int temp[17];
