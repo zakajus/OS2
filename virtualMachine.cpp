@@ -3,7 +3,7 @@
 struct StatusFlag{
     // one-bit unsigned field, allowed values are 0-1
     unsigned int cf : 1; //carry flag
-    unsigned int pr : 1; //parity flag
+    unsigned int of : 1; //overflow flag
     unsigned int af : 1; //auxiliary flag
     unsigned int zf : 1; //zero flag
 };
@@ -11,15 +11,15 @@ struct StatusFlag{
 class VirtualMachine
 {
     private:
-        uint8_t* rax;
-        uint8_t* rbx;
+        uint32_t* rax;
+        uint32_t* rbx;
         uint16_t* ds;
         uint16_t* cs;
         uint16_t* pc;
         StatusFlag* sf;
         RealMachine* realMachine;
     public:
-        VirtualMachine(uint8_t &rax, uint8_t &rbx,  uint16_t &ds, uint16_t &cs, uint16_t &pc, StatusFlag &sf, RealMachine &realMachine){
+        VirtualMachine(uint32_t &rax, uint32_t &rbx,  uint16_t &ds, uint16_t &cs, uint16_t &pc, StatusFlag &sf, RealMachine &realMachine){
             this->rax = &rax;
             this->rbx = &rbx;
             this->ds = &ds;
@@ -29,27 +29,55 @@ class VirtualMachine
             this->realMachine = &realMachine;
         }
 
-        void add(uint8_t x, uint8_t y){
+        void add(uint8_t x, uint8_t y){ // suziuret ar cia viskas logiska
              int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
-             uint8_t valueToAdd = realMachine->getWordFromMemory(realAddress);
-             *rax += valueToAdd;
-            //patikrint ar nebuvo overflow
+             uint32_t valueToAdd = realMachine->getWordFromMemory(realAddress);
+
+            uint32_t originalRax = *rax;
+            *rax += valueToAdd;
+            sf->cf = (*rax < originalRax) ? 1 : 0; // Check for unsigned overflow (carry flag)// If there was overflow, the result will be smaller than original value
+            sf->zf = (*rax == 0) ? 1 : 0;  // Check zero flag
+            sf->af = (((originalRax & 0x0F) + (valueToAdd & 0x0F)) > 0x0F) ? 1 : 0; // Check auxiliary flag (carry from bit 3 to bit 4)
+
+            //jei buvo overflow i RBX padet 1
         }
         void substract(uint8_t x, uint8_t y){
             int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
-            uint8_t valueToSubstract = realMachine->getWordFromMemory(realAddress);
+            uint32_t valueToSubstract = realMachine->getWordFromMemory(realAddress);
             *rax -= valueToSubstract;
+            if(*rax == 0){
+                sf->zf = 0;
+            }
         }
-        void multiply(uint8_t x, uint8_t y){
+        void multiply(uint8_t x, uint8_t y){ //istestuot paziuret kur tas musu atsakymas galu gale gaunasi
             int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
-            uint8_t valueToMultiply = realMachine->getWordFromMemory(realAddress);
+            uint32_t valueToMultiply = realMachine->getWordFromMemory(realAddress);
+            uint32_t originalRax = *rax;
+        
             *rax *= valueToMultiply;
-            //patikrint ar nebuvo overflow
+            
+            if (valueToMultiply != 0) {
+                sf->cf = (*rax / valueToMultiply != originalRax) ? 1 : 0;
+                sf->of = sf->cf; // For MUL instruction, OF = CF
+            } else {
+                sf->cf = 0;
+                sf->of = 0;
+            }
+        
+            sf->zf = (*rax == 0) ? 1 : 0;
         }
         void divide(uint8_t x, uint8_t y){
             int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
-            uint8_t valueToDivideFrom = realMachine->getWordFromMemory(realAddress);
+            uint32_t valueToDivideFrom = realMachine->getWordFromMemory(realAddress);
             *rax /= valueToDivideFrom;
+
+            if(valueToDivideFrom == 0){
+                realMachine->changePI(4);
+                return;
+            }
+             if(*rax == 0){
+                sf->zf = 0;
+            }
         }
         void compare(){
             if(*rax > *rbx){//CF = 0, ZF = 0
@@ -61,18 +89,19 @@ class VirtualMachine
                 sf->zf = 0;
             }
             else{ //rax = rbx //ZF = 0
-                sf->zf = 0;
+                sf->zf = 1;
+                sf->cf = 0;
             }
         }
         void and_(){
-            uint8_t word = realMachine->getNextWord();
+            uint32_t word = realMachine->getNextWord();
             *rbx = *rax & word;
 
             sf->zf = (*rbx == 0) ? 1 : 0;  // Zero flag if result is 0
             sf->cf = 0; // CF is typically cleared for logical operations
         }
         void or_(){
-            uint8_t word = realMachine->getNextWord();
+            uint32_t word = realMachine->getNextWord();
             *rbx = *rax | word;  // Bitwise OR, store result in RBX
             
             sf->zf = (*rbx == 0) ? 1 : 0;  // Zero flag if result is 0
