@@ -38,7 +38,11 @@ class realMachine{
             return realAddress;
         }
 
-        void printAllRegisterValues();
+        void printAllRegisterValues(){
+            cout << "RAX: " << rax << " RBX: " << rbx << " MODE: " << mode << " DS: " << ds << " CS: " << cs << " PC: " << pc << " TI: " << ti << " DI: " << di << " SI: " << si << " PTR: " << ptr << endl;
+            cout << "Status flag: CF: " << sf.cf << " PR: " << sf.pr << " AF: " << sf.af << " ZF: " << sf.zf << endl;
+
+        }
         void printCurrentPage();
         void printVirtualMemory();
         void printRealMemory();
