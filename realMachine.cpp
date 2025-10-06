@@ -19,7 +19,8 @@ class realMachine{
         uint8 si;
         StatusFlag sf;
         uint32 ptr;
-        virtualMachine virtualiMasina;
+        VirtualMachine virtualMachine;
+        ChannelDevice channelDevice;
         uint32 userMemory[1632]; //102 blokai po 16 žodžių
         uint32 supervisorMemory[512]; //32 blokai po 16 žodžių 
     
