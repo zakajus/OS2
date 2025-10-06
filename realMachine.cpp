@@ -20,7 +20,8 @@ class realMachine{
         uint8_t si;
         StatusFlag sf;
         uint32_t ptr;
-        virtualMachine virtualiMasina;
+        VirtualMachine virtualMachine;
+		ChannelDevice channelDevice;
         uint32_t userMemory[1632]; //102 blokai po 16 žodžių
         uint32_t supervisorMemory[512]; //32 blokai po 16 žodžių 
     
@@ -39,7 +40,11 @@ class realMachine{
             return realAddress;
         }
 
-        void printAllRegisterValues();
+        void printAllRegisterValues(){
+            cout << "RAX: " << rax << " RBX: " << rbx << " MODE: " << mode << " DS: " << ds << " CS: " << cs << " PC: " << pc << " TI: " << ti << " DI: " << di << " SI: " << si << " PTR: " << ptr << endl;
+            cout << "Status flag: CF: " << sf.cf << " PR: " << sf.pr << " AF: " << sf.af << " ZF: " << sf.zf << endl;
+
+        }
         void printCurrentPage();
         void printVirtualMemory();
         void printRealMemory();
@@ -49,6 +54,14 @@ class realMachine{
 //Sekanti vykdoma komanda.
 //Išorinių įrenginių būsenos.
 //Vykdomos komandos VM puslapio reikšmės.
+
+        void changeSI(int i){
+            si = i;
+        }
+
+        void changePI(int i){
+            pi = i;
+        }
 
 
         void allocateMemoryForVirtualMachine(){
