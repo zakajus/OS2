@@ -119,11 +119,26 @@ class VirtualMachine
         void execute(uint8 x){
             //Paleidžiama nauja programa, kurios failo pavadinimas yra nurodomas RBX registre. 
             //Yra galimybe paduoti bent vieną bloką duomenu programai kaip parametrą. Baitas x nurodo parametru˛ bloką.
+            realMachine->changeSI(5);
         }
         void runNextCommand();
-        void readFromKeyboard();
-        void printNumber();
-        void printText();
+
+
+        void readFromKeyboard(){
+             realMachine->changeSI(2);
+        }
+        void printNumber(){
+            realMachine->changeSI(3);
+            //cia turetu pagal ideja nieko daugiau nereikt ir RBX registre bus tai ka spausdinam ar kaip
+        }
+        void printText(){
+            realMachine->changeSI(4);
+            //cia turetu pagal ideja nieko daugiau nereikt ir RBX registre bus tai ka spausdinam ar kaip
+        }
+
+        void _halt(){
+            realMachine->changeSI(1);
+        }
 
 
 };
