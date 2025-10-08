@@ -4,5 +4,6 @@ class Keyboard {
 private:
 	std::vector<char> keysBuffer;
 public:
-	char getKey();
+	uint8_t getKey();
+	void getBytes(uint8_t* dest, uint32_t rnum);
 };
