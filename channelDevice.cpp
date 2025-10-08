@@ -18,15 +18,19 @@ private:
     uint8_t* userMemory;
     uint8_t* supervisorMemory;
     RealMachine* realMachine;
+    Monitor* monitor;
+    Keyboard* keyboard;
     const size_t userMemSize = 1024; //16 blocks * 16 words * 4 bytes
     const size_t supervisorMemSize = 2048; //32 blocks * 16 words * 4 bytes
     const size_t BLOCK_SIZE = 64; // 16 words × 4 bytes
 
 public:
-    ChannelDevice(RealMachine* realMachine, uint8_t* userMemory, uint8_t* supervisorMemory) : sb(0), db(0), off(0), rnum(0), name(0), st(1), dt(1){
+    ChannelDevice(RealMachine* realMachine, uint8_t* userMemory, uint8_t* supervisorMemory, Monitor* monitor, Keyboard* keyboard) : sb(0), db(0), off(0), rnum(0), name(0), st(1), dt(1){
         this->realMachine = &realMachine;
         this->userMemory = &userMemory;
         this->supervisorMemory = &supervisorMemory;
+        this->monitor = &monitor;
+        this->keyboard = &keyboard;
     }
     ~ChannelDevice(){}
 
@@ -46,13 +50,13 @@ public:
         dt = value; 
     }
 
-    void copyFromUserMemory(uint8_t* dest, uint32_t offset, uint32_t size);
-    void copyFromSupervisorMemory(uint8_t* dest, uint32_t offset, uint32_t size);
+    void copyFromUserMemory(uint8_t* dest, uint32_t offset);
+    void copyFromSupervisorMemory(uint8_t* dest, uint32_t offset);
     void copyFromExternalMemory(uint8_t* dest);
     void copyFromInputStream(uint8_t* dest);
 
-    void copyToUserMemory(uint32_t offset, const uint8_t* src, uint32_t size);
-    void copyToSupervisorMemory(uint32_t offset, const uint8_t* src, uint32_t size);
+    void copyToUserMemory(uint32_t offset, const uint8_t* src);
+    void copyToSupervisorMemory(uint32_t offset, const uint8_t* src);
     void copyToOutputStream(const uint8_t* src);
 
     void xchg(){
@@ -63,10 +67,10 @@ public:
         std::vector<uint8_t> buffer(rnum);
         switch (st) {
             case 1: // User memory
-                copyFromUserMemory(buffer.data(), sb * BLOCK_SIZE + off, rnum);
+                copyFromUserMemory(buffer.data(), sb * BLOCK_SIZE + off);
                 break;
             case 2: // Supervisor memory
-                copyFromSupervisorMemory(buffer.data(), sb * BLOCK_SIZE + off, rnum);
+                copyFromSupervisorMemory(buffer.data(), sb * BLOCK_SIZE + off);
                 break;
             case 3: // External memory
                 copyFromExternalMemory(buffer.data());
@@ -81,10 +85,10 @@ public:
         // Step 2: Write to destination based on DT
         switch (dt) {
             case 1: // User memory
-                copyToUserMemory(db * BLOCK_SIZE + off, buffer.data(), rnum);
+                copyToUserMemory(db * BLOCK_SIZE + off, buffer.data());
                 break;
             case 2: // Supervisor memory
-                copyToSupervisorMemory(db * BLOCK_SIZE + off, buffer.data(), rnum);
+                copyToSupervisorMemory(db * BLOCK_SIZE + off, buffer.data());
                 break;
             case 3: // Output stream
                 copyToOutputStream(buffer.data());
@@ -96,21 +100,39 @@ public:
     }
 };
 
-void ChannelDevice::copyFromUserMemory(uint8_t* dest, uint32_t offset, uint32_t size) {
-    if (offset + size > userMemSize) {
+void ChannelDevice::copyFromUserMemory(uint8_t* dest, uint32_t offset) {
+    if (rnum + size > userMemSize) {
         realMachine->changePI(1);
     }
-    memcpy(dest, userMemory + offset, size);
+    memcpy(dest, userMemory + offset);
 }
 
-void ChannelDevice::copyFromSupervisorMemory(uint8_t* dest, uint32_t offset, uint32_t size) {
-    if (offset + size > supervisorMemSize) {
+void ChannelDevice::copyFromSupervisorMemory(uint8_t* dest, uint32_t offset) {
+    if (rnum + size > supervisorMemSize) {
         realMachine->changePI(1);
     }
-    memcpy(dest, supervisorMemory + offset, size);
+    memcpy(dest, supervisorMemory + offset);
 }
 
 void ChannelDevice::copyFromExternalMemory(uint8_t* dest) {
+
+    ifstream file("example.txt", ios::binary);
+    
+    if (!file.is_open()) {
+        cerr << "Error opening file!" << endl; //Koks cia pertraukimas turetu but
+        return 1;
+    }
+
+    uint8_t[rnum] buffer;
+
+    file.read(buffer, rnum);
+    
+    streamsize bytesRead = file.gcount(); //ar sito reiik
+    cout << "Bytes read: " << bytesRead << endl;
+
+    file.close();
+    //pabaigt daryt normaliai
+    
     //nueit i ta txt faila kur turim 
     //susirast failo pradzia
     //ziuret ar pavadiniams sutampa
@@ -120,27 +142,25 @@ void ChannelDevice::copyFromExternalMemory(uint8_t* dest) {
 }
 
 
-void ChannelDevice::copyToSupervisorMemory(uint32_t offset, const uint8_t* src, uint32_t size) {
-    if (offset + size > supervisorMemSize) {
+void ChannelDevice::copyToSupervisorMemory(uint32_t offset, const uint8_t* src) {
+    if (offset + rnum > supervisorMemSize) {
         realMachine->changePI(1);
     }
-    memcpy(supervisorMemory + offset, src, size);
+    memcpy(supervisorMemory + offset, src);
 }
 
-void ChannelDevice::copyToUserMemory(uint32_t offset, const uint8_t* src, uint32_t size) {
-    if (offset + size > userMemSize) {
+void ChannelDevice::copyToUserMemory(uint32_t offset, const uint8_t* src) {
+    if (offset + rnum > userMemSize) {
         realMachine->changePI(1);
     }
-    memcpy(userMemory + offset, src, size);
+    memcpy(userMemory + offset, src);
 }
 
 
 void ChannelDevice::copyFromInputStream(uint8_t* dest) {    
-    //iskviest klaviaturos klase
-    //isidet i dest tai ka nuskaitom
+    keybord->getBytes(dest, rnum);
 }
 
 void ChannelDevice::copyToOutputStream(const uint8_t* src) {
-    //Iskviest monitoriaus klase
-    //isspausdint tai ka turim src
+    monitor->display(const uint8_t* src, uint32_t bytes);
 }
