@@ -1,141 +1,132 @@
-#include <iostream>
-#include <ctime>
-#include <vector>
-#include <cstdint>
-
-#include "virtualMachine.h"
+#include "realMachine.h"
+#include "channelDevice.h"
 
 using namespace std;
 
-class realMachine{
-    private:
-        uint32_t rax;
-        uint32_t rbx;
-        uint8_t mode;
-        uint16_t ds;
-        uint16_t cs;
-        uint16_t pc;
-        uint16_t ti;
-        uint8_t di;
-        uint8_t si;
-        StatusFlag sf;
-        uint32_t ptr;
-        VirtualMachine virtualMachine;
-		ChannelDevice channelDevice;
-        uint32_t userMemory[1632]; //102 blokai po 16 žodžių
-        uint32_t supervisorMemory[512]; //32 blokai po 16 žodžių 
+RealMachine::RealMachine(Monitor& monitor, Keyboard& keyboard) 
+    : rax(0), rbx(0), mode(0), ds(0), cs(0), pc(0), ti(0), pi(0), si(0), ptr(0), virtualMachine(nullptr) {
     
-        vector<int> freeBlocks;
-        vector<int> occupiedBlocks;
-    public:
-        realMachine(/* args */){
-            for (int i = 0; i <= 101; ++i) {
-                freeBlocks.push_back(i);
-            }
+    // Initialize memory
+    memset(userMemory, 0, sizeof(userMemory));
+    memset(supervisorMemory, 0, sizeof(supervisorMemory));
+    
+    // Create ChannelDevice with pointers to memory
+    channelDevice = new ChannelDevice(
+        this, userMemory, supervisorMemory, &monitor, &keyboard);
+    
+    for (int i = 0; i < 102; i++) {
+        freeBlocks.push_back(i);
+    }
+}
+
+int RealMachine::translateLocalAdrressToRealAddress(uint8_t x, uint8_t y){
+    uint32_t pageTable[16];
+    
+    for(int i = 0; i < 16; i++){
+        pageTable[i] = userMemory[ptr * 16 + i];
+    }
+    
+    int realAddress = pageTable[x] * 16 + y;
+    return realAddress;
+}
+
+void RealMachine::printAllRegisterValues(){
+    cout << "RAX: " << rax << " RBX: " << rbx << " MODE: " << mode << " DS: " << ds << " CS: " << cs << " PC: " << pc << " TI: " << ti << " DI: " << pi << " SI: " << si << " PTR: " << ptr << endl;
+    cout << "Status flag: CF: " << sf.cf << " OF: " << sf.of << " AF: " << sf.af << " ZF: " << sf.zf << endl;
+}
+void RealMachine::printCurrentPage(){
+
+}
+void RealMachine::printVirtualMemory(){
+
+}
+void RealMachine::printRealMemory(){
+
+}
+
+void RealMachine::changeSI(int i){
+    si = i;
+}
+
+void RealMachine::changePI(int i){
+    pi = i;
+}
+
+
+void RealMachine::allocateMemoryForVirtualMachine(){
+    int temp[17];
+    srand(time(0));
+    int randomIndex;
+    for(int i = 0; i < 17; ++i){
+        randomIndex = rand() % freeBlocks.size();
+        occupiedBlocks.push_back(randomIndex);
+        temp[i] = randomIndex;
+        freeBlocks[randomIndex] = freeBlocks.back();
+        freeBlocks.pop_back();
+    }
+}
+
+uint32_t RealMachine::getWordFromMemory(int number){
+    return userMemory[number];
+}
+
+uint32_t RealMachine::getNextWord(){
+    //implementuoooot
+    return 0;
+}
+
+void RealMachine::saveWordToMemoryFromAx(int number){ //sita paziuret ar gerai
+    userMemory[number] = rax;
+}
+
+void RealMachine::saveWordToMemoryFromBx(int number){ //sita paziuret ar gerai
+    userMemory[number] = rbx;
+}
+
+void RealMachine::test_(){
+    //pries iskvieciant paprogrames issaugoti registru reiksmes kazkur
+    if(si > 0){
+        switch (si){
+            case 1:
+                //HALT
+                break;
+            case 2:
+                //READ
+                break;
+            case 3:
+                //PNUM
+                break;
+            case 4:
+                //PTXT
+                break;
+            case 5:
+                //EXEx
+                break;
+            default:
+                break;
         }
-        ~realMachine();
-        int translateLocalAdrressToRealAddress(uint8_t x, uint8_t y){
-            uint32_t pageTable[16] = userMemory[PTR*16];
-            int realAddress = pageTable[x] * 16 + y;
-            return realAddress;
+    }
+    if(pi > 0){
+        switch (pi){
+            case 1:
+                //wrong address
+                break;
+            case 2:
+                //wrong operation code
+                break;
+            case 3:
+                //wrong inicialization/assignment
+                break;
+            case 4:
+                // division from 0
+                break;
+            default:
+                break;
         }
-
-        void printAllRegisterValues(){
-            cout << "RAX: " << rax << " RBX: " << rbx << " MODE: " << mode << " DS: " << ds << " CS: " << cs << " PC: " << pc << " TI: " << ti << " DI: " << di << " SI: " << si << " PTR: " << ptr << endl;
-            cout << "Status flag: CF: " << sf.cf << " PR: " << sf.pr << " AF: " << sf.af << " ZF: " << sf.zf << endl;
-
-        }
-        void printCurrentPage();
-        void printVirtualMemory();
-        void printRealMemory();
-
-//Vartotojo sąsajoje turi būti komandų atlikimo demonstracija bei visų VM komponentų būsenų kaita vykdant programą žingsniniu režimu.
-//Registrų reikšmės.
-//Sekanti vykdoma komanda.
-//Išorinių įrenginių būsenos.
-//Vykdomos komandos VM puslapio reikšmės.
-
-        void changeSI(int i){
-            si = i;
-        }
-
-        void changePI(int i){
-            pi = i;
-        }
-
-
-        void allocateMemoryForVirtualMachine(){
-            int temp[17];
-            srand(time(0));
-            int randomNumber;
-            for(int i = 0; i < 17; ++i){
-                randomNumber = rand() % freeBlocks.size();
-                occupiedBlocks.push_back(randomNumber);
-                temp[i] = randomNumber;
-                freeBlocks.erase( remove(freeBlocks.begin(), freeBlocks.end(), randomNumber), freeBlocks.end());
-            }
-        }
-
-        uint32_t getWordFromMemory(int number){
-            return userMemory[number];
-        }
-
-        uint32_t getNextWord(){
-            //implementuoooot
-            return 0;
-        }
-
-        void saveWordToMemoryFromAx(int number){ //sita paziuret ar gerai
-            userMemory[number] = rax;
-        }
-
-        void saveWordToMemoryFromBx(int number){ //sita paziuret ar gerai
-            userMemory[number] = rbx;
-        }
-
-        void test_(){
-            //pries iskvieciant paprogrames issaugoti registru reiksmes kazkur
-            if(si > 0){
-                switch (si):
-                    case 1:
-                        //HALT
-                        break;
-                    case 2:
-                        //READ
-                        break;
-                    case 3:
-                        //PNUM
-                        break;
-                    case 4:
-                        //PTXT
-                        break;
-                    case 5:
-                        //EXEx
-                        break;
-                    default:
-                        break;
-            }
-            if(pi > 0){
-                switch (pi):
-                    case 1:
-                        //wrong address
-                        break;
-                    case 2:
-                        //wrong operation code
-                        break;
-                    case 3:
-                        //wrong inicialization/assignment
-                        break;
-                    case 4:
-                        // division from 0
-                        break;
-                    default:
-                        break;
-                
-            }
-            if(ti == 0){
-                //change to other program
-            }
-            //atstatyti registru reiksmes
-        }
-};
+        
+    }
+    if(ti == 0){
+        //change to other program
+    }
+    //atstatyti registru reiksmes
+}

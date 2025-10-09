@@ -1,4 +1,5 @@
-class Monitor {
-public:
-	void display(const uint8_t* src, uint32_t bytes);
-};
+#include "monitor.h"
+
+void Monitor::display(const uint8_t* src, uint32_t bytes){
+    
+}

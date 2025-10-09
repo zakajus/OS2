@@ -12,7 +12,8 @@ int main() {
     //isoriniu irenginiu busenos                    kas cia?
     //Vykdomos komandos VM puslapio reikšmės.
 
-    virtualMachine virtualMachine1;
+    VirtualMachine virtualMachine1;
+    RealMachine realMachine1;
 
     while(1){
         virtualMachine1.runNextCommand();

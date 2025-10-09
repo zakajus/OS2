@@ -1,9 +1,10 @@
-#include <vector>
+#include "keyboard.h"
 
-class Keyboard {
-private:
-	std::vector<char> keysBuffer;
-public:
-	uint8_t getKey();
-	void getBytes(uint8_t* dest, uint32_t rnum);
-};
+
+uint8_t Keyboard::getKey(){
+
+}
+
+void Keyboard::getBytes(uint8_t* dest, uint32_t rnum){
+
+}
