@@ -115,8 +115,7 @@ void ChannelDevice::copyFromSupervisorMemory(uint8_t* dest, uint32_t offset) {
 }
 
 void ChannelDevice::copyFromExternalMemory(uint8_t* dest) {
-
-    ifstream file("example.txt", ios::binary);
+    ifstream file("disk.txt", ios::binary);
     
     if (!file.is_open()) {
         cerr << "Error opening file!" << endl; //Koks cia pertraukimas turetu but
@@ -124,21 +123,42 @@ void ChannelDevice::copyFromExternalMemory(uint8_t* dest) {
     }
 
     uint8_t[rnum] buffer;
+    uint8_t[4] temp;
+    const uint8_t target[4] = {'*', '*', '*', '*'};
 
-    file.read(buffer, rnum);
+
+    while(1){
+        file.read(temp, 4);
+        if(file.gcount() != 4) {
+            //kazkoks pertraukimas?
+            cerr << "Error: Could not find target sequence" << endl;
+            file.close();
+            return;
+        }
+        if(memcmp(temp, target, 4) == 0) {
+            file.read(temp, 4);
+            if(file.gcount() != 4) {
+                //kazkoks pertraukimas?
+                cerr << "Error: Could not find target sequence" << endl;
+                file.close();
+                return;
+            }
+            if(memcmp(temp, &name, 4) == 0) {
+                break;
+            }
+        }
+    }
+    //
+    file.read((char*)buffer, rnum); // Cast to char*
+    streamsize bytesRead = file.gcount();
     
-    streamsize bytesRead = file.gcount(); //ar sito reiik
-    cout << "Bytes read: " << bytesRead << endl;
+    if(bytesRead != rnum) {
+        cerr << "Warning: Only read " << bytesRead << " bytes out of " << rnum << endl;
+    }
+    memcpy(dest, buffer, bytesRead); 
+    //cout << "Bytes read: " << bytesRead << endl;
 
     file.close();
-    //pabaigt daryt normaliai
-    
-    //nueit i ta txt faila kur turim 
-    //susirast failo pradzia
-    //ziuret ar pavadiniams sutampa
-    //jei ne einam prie kito failo
-    //jei taip tai skaitom tiesiog
-    //jei pabaiga griztam
 }
 
 
@@ -162,5 +182,5 @@ void ChannelDevice::copyFromInputStream(uint8_t* dest) {
 }
 
 void ChannelDevice::copyToOutputStream(const uint8_t* src) {
-    monitor->display(const uint8_t* src, uint32_t bytes);
+    monitor->display(src, rnum);
 }
