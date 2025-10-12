@@ -10,6 +10,7 @@ CXXDependInfo.json
 *.o
 *.ddi
 *.modmap
+.idea/
 
 # CLion logs and environment
 clion-Debug-log.txt
