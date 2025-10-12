@@ -6,6 +6,8 @@
 #include <fstream>
 #include <vector>
 
+#include "realMachine.h"
+
 class RealMachine;
 class Monitor;
 class Keyboard;
@@ -34,7 +36,7 @@ private:
 public:
      ChannelDevice(RealMachine* realMachine, uint32_t* userMemory, uint32_t* supervisorMemory, Monitor* monitor, Keyboard* keyboard) 
         : sb(0), db(0), off(0), rnum(0), name(0), st(1), dt(1),
-          realMachine(realMachine), userMemory(userMemory), supervisorMemory(supervisorMemory),
+          userMemory(userMemory), supervisorMemory(supervisorMemory), realMachine(realMachine),
           monitor(monitor), keyboard(keyboard) {}
     ~ChannelDevice(){}
 

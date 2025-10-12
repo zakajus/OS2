@@ -97,22 +97,32 @@ void VirtualMachine::not_(){
     sf->zf = (*rbx == 0) ? 1 : 0;
     sf->cf = 0;
 }
-void VirtualMachine::jumpZero(uint8_t x, uint8_t y){
-    if(sf->zf){
-        //hehe ka daryt
+
+// VISIEMS JUMPAMS: tiesiog pakeisti program counteri
+void VirtualMachine::jump(uint8_t x, uint8_t y) {
+    int const realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
+    *pc = realMachine->getWordFromMemory(realAddress);
+}
+
+void VirtualMachine::jumpZero(uint8_t x, uint8_t y) {
+    if (sf->zf) {
+        jump(x, y);
     }
 }
 void VirtualMachine::jumpNotCarry(uint8_t x, uint8_t y){
+    if (!sf->cf) {
+        jump(x, y);
+    }
 
 } //pagalvot ar nereiks pakeist i jump not zero?
 void VirtualMachine::jumpBelow(uint8_t x, uint8_t y){
     if(sf->cf){
-        //hehe ka daryt
+        jump(x, y);
     }
 }
 void VirtualMachine::jumpAbove(uint8_t x, uint8_t y){
     if(!sf->zf && !sf->cf){
-        //hehe ka daryt
+        jump(x, y);
     }
 }
 void VirtualMachine::moveToAX(uint8_t x, uint8_t y){
@@ -136,8 +146,109 @@ void VirtualMachine::execute(uint8_t x){
     //Yra galimybe paduoti bent vieną bloką duomenu programai kaip parametrą. Baitas x nurodo parametru˛ bloką.
     realMachine->changeSI(5);
 }
-void VirtualMachine::runNextCommand(){
-    
+void VirtualMachine::runNextCommand(uint32_t const cmd){
+    /* implementuojant pacias funkcijas, uztikrinti, kad
+     * jos rekursyviai viena kitos nekviestu
+     * kad neatsitiktu stackoverflow.com :thumbs_up:
+     */
+
+    // TODO: komentarai #
+    // TODO: patikrinti $
+
+    // 4 baitu opcodes (nera xy dalies)
+    switch (cmd) {
+        // Procesoriaus
+        case 0x48414C54: // HALT
+            _halt();
+            return;
+        case 0x434D505F: // CMP_
+            compare();
+            return;
+
+        // Logines
+        case 0x414E445F: // AND_
+            and_();
+            return;
+        case 0x4F525F5F: // OR__
+            or_();
+            return;
+        case 0x4E4F545F: // NOT_
+            not_();
+            return;
+
+        // I/O
+        case 0x52454144: // READ
+            readFromKeyboard();
+            return;
+        case 0x504E554D: // PNUM
+            printNumber();
+            return;
+        case 0x50545854: // PTXT
+            printText();
+            return;
+    }
+
+    // 2 baitu opcodes (yra xy dalis)
+    const uint16_t opcode = (cmd >> 16) & 0xFFFF; // & xFF(FF) bitmaskas pravalo prasiftintus bitus
+    const uint8_t x = (cmd >> 8) & 0xFF;
+    const uint8_t y = cmd & 0xFF;
+
+    switch (opcode) {
+        // Procesoriaus
+        case 0x4144: // ADxy
+            add(x, y);
+            break;
+        case 0x5355: // SUxy
+            substract(x, y);
+            break;
+        case 0x4D55: // MUxy
+            multiply(x, y);
+            break;
+        case 0x4449: // DIxy
+            divide(x, y);
+            break;
+
+        // Suoliai
+        case 0x4A5A: // JZxy
+            jumpZero(x, y);
+            break;
+        case 0x4A4E: // JNxy
+            jumpNotCarry(x, y);
+            break;
+        case 0x4A42: // JBxy
+            jumpBelow(x, y);
+            break;
+        case 0x4A41: // JAxy
+            jumpAbove(x, y);
+            break;
+        case 0x4A50: // JPxy
+            jump(x, y);
+            break;
+
+        // Darbas su duomenimis
+        case 0x4D41: // MAxy
+            moveToAX(x, y);
+            break;
+        case 0x4D42: // MBxy
+            moveToBX(x, y);
+            break;
+        case 0x5341: // SAxy
+            saveFromAX(x, y);
+            break;
+        case 0x5342: // SBxy
+            saveFromBX(x, y);
+            break;
+        case 0x4558: // EXEx - kazkodel turim viena 3 baitu opkoda xd? ziurim tik i EX
+            execute(x);
+            break;
+
+        default:
+            realMachine->changePI(2); // neteisingas operacijos kodas
+    }
+
+
+
+
 }
 
 
