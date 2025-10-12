@@ -7,4 +7,6 @@ add_executable(OS2 main.cpp
         channelDevice.cpp
         virtualMachine.cpp
         realMachine.cpp
-        hardDisk.cpp)
+        hardDisk.cpp
+        monitor.cpp
+        hardDisk.h)

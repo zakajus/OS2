@@ -6,56 +6,65 @@
 #include <vector>
 #include <cstdint>
 
+#include "keyboard.h"
+#include "monitor.h"
+
 
 class ChannelDevice;
 #include "virtualMachine.h"
 
 using namespace std;
 
-class RealMachine{
-    private:
-        uint32_t rax;
-        uint32_t rbx;
-        uint8_t mode;
-        uint16_t ds;
-        uint16_t cs;
-        uint16_t pc;
-        uint16_t ti;
-        uint8_t pi;
-        uint8_t si;
-        StatusFlag sf;
-        uint32_t ptr;
-        VirtualMachine* virtualMachine;
-		ChannelDevice* channelDevice;
-        uint32_t userMemory[1632]; //102 blokai po 16 žodžių
-        uint32_t supervisorMemory[512]; //32 blokai po 16 žodžių 
-    
-        vector<int> freeBlocks;
-        vector<int> occupiedBlocks;
-    public:
-        RealMachine(Monitor& monitor, Keyboard& keyboard);
-        int translateLocalAdrressToRealAddress(uint8_t x, uint8_t y);
+class RealMachine {
+private:
+    uint32_t rax;   // bendros paskirties
+    uint32_t rbx;   // bendros paskirties
+    uint8_t mode;   // darbo rezimas: 0 - vartotojas, 1 - supervizorius
+    uint16_t ds;    // duomenu segmentas
+    uint16_t cs;    // kodo segmentas
+    uint16_t pc;    // programos counteris
+    uint16_t ti;    // timeris
+    uint8_t pi;     // programiniu pertraukimu registras
+    uint8_t si;     // supervizoriniu pertraukimu registras
+    StatusFlag sf;  // pozymiu registras
+    uint32_t ptr;   // puslapiu lentele
+    VirtualMachine *virtualMachine;
+    ChannelDevice *channelDevice;
+    uint32_t userMemory[1632];      //102 blokai po 16 žodžių
+    uint32_t supervisorMemory[512]; //32  blokai po 16 žodžių
 
-        void printAllRegisterValues();
-        void printCurrentPage();
-        void printVirtualMemory();
-        void printRealMemory();
+    vector<int> freeBlocks;
+    vector<int> occupiedBlocks;
 
-        void changeSI(int i);
-        void changePI(int i);
+public:
+    RealMachine(Monitor &monitor, Keyboard &keyboard);
+
+    int translateLocalAdrressToRealAddress(uint8_t x, uint8_t y);
+
+    void printAllRegisterValues();
+
+    void printCurrentPage();
+
+    void printVirtualMemory();
+
+    void printRealMemory();
+
+    void changeSI(int i);
+
+    void changePI(int i);
 
 
-        void allocateMemoryForVirtualMachine();
+    void allocateMemoryForVirtualMachine();
 
-        uint32_t getWordFromMemory(int number);
+    uint32_t getWordFromMemory(int number);
 
-        uint32_t getNextWord();
+    uint32_t getNextWord();
 
-        void saveWordToMemoryFromAx(int number);
-        void saveWordToMemoryFromBx(int number);
-        void nextStep();
+    void saveWordToMemoryFromAx(int number);
 
-        void test_();
+    void saveWordToMemoryFromBx(int number);
+
+    void test_();
 };
 
 #endif
