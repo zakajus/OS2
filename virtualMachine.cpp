@@ -238,12 +238,16 @@ void VirtualMachine::runNextCommand(const uint32_t cmd) const {
         case 0x5342: // SBxy
             saveFromBX(x, y);
             break;
-        case 0x4558: // EXEx - kazkodel turim viena 3 baitu opkoda xd? ziurim tik i EX
+        case 0x4558: // EXEx - kazkodel turim viena 3 baitu opkoda xd? ziurima tik i EX
             execute(x);
             break;
 
         default:
             realMachine->changePI(2); // neteisingas operacijos kodas
+
+            /* Teoriskai cia neturetu nusigauti, nes pries tai su test() patikrinama
+             * ar opcode yra validus, bet palieku cerr debugginimui */
+            cerr << "Error: Invalid opcode " << hex << opcode << dec << endl;
     }
 }
 
