@@ -1,0 +1,149 @@
+****    # Vykdomojo failo pradžia
+PVZ1    # Failo pavadinimas
+$AMJ    # Programos pradžia
+$x00            # Duomenų segmentas
+0000    # Į 0 bloką, 0 žodį įrašome reikšmę 0x00 (0)
+0001    # Į 0 bloką, 1 žodį įrašome reikšmę 0x01 (1)
+$x10
+Ives    # Į 1 bloką rašome tekstines konstantas
+k sk    # 1 blokas 1 žodis
+aici    # 1 blokas 2 žodis
+u:      # 1 blokas 3 žodis
+ +      # 1 blokas 4 žodis
+ -      # 1 blokas 5 žodis
+ =      # 1 blokas 6 žodis
+ x      # 1 blokas 7 žodis
+ /      # 1 blokas 8 žodis
+
+$x30            # Kodo segmentas
+MA00    # Į RAX registrą įrašome reikšmę esančią 0 bloko 0 žodyje
+MB10    # Spausinam Ivesk skaiciu:
+PTXT
+MB11
+PTXT
+MB12
+PTXT
+MB13
+PTXT
+READ    # Nuskaitom skaičių į RBX registrą
+SB20    # Į 2 bloko 0 žodį įrašom nuskaitytą skaičių
+MB10    # Spausdinam Ivesk skaiciu:
+PTXT
+MB11
+PTXT
+MB12
+$x40
+PTXT
+MB13
+PTXT
+READ    # Nuskaitom skaičių į RBX registrą
+SB21    # Į 2 bloko 1 žodį įrašom nuskaitytą skaičių
+            # Sudėtis (Ats. 2 ir 3 žodyje)
+MB00
+MA20    # Įrašom į RAX registrą pirmą skaičių
+AD21    # Pridedam antrą skaičių prie RAX
+SB22    # 2 bloko 2 žodyje išsaugom sumos didesniają dalį (jei nieko nebus įrašyta, prieš tai čia įrašėm 0)
+SA23    # 2 bloko 3 žodyje išsaugom sumą #$x4B
+MB20    # pirmas skaičius
+PNUM
+MB14    # +
+PTXT
+MB21    # antras skaičius
+PNUM
+$x50
+MB16    # =
+PTXT
+MB22    # suma (kaip išspausdint naują eilutę po šito?)
+PNUM
+MB23
+PNUM
+            #Atimtis (ats 4 žodyje)
+MA20    # Į RAX registrą pasidedam pirmą skaičių
+MB21    # Į RBX registrą pasidedam antrą skaičių
+CMP_    # Palyginam RAX ir RBX reikšmes
+JA65    # Šokam, kur skaičiuosim 1 skaičius - 2 skaičius
+JB72    # Šokam, kur skaičiuosim 2 skaičius - 1 skaičius
+PNUM    # Jei lygūs, iškart spausdinam veiksmą ir atsakymą
+MB15    # -
+PTXT
+MB20
+PNUM
+$x60
+MB16    # =
+PTXT
+MB00
+PNUM
+JP7F    #Šokam į daugybą
+SU21    # iš RAX atimam reikšmę 2 bloko 1 žodyje #x65
+SA24    # išsaugom atsakymą 2 bloke 4 žodyje
+MB20    # spausdinam veiksmą ir atsakymą
+PNUM
+MB15    # -
+PTXT
+MB21
+
+PNUM
+MB16    # =
+PTXT
+MB24
+$x70
+PNUM
+JP7F    #Šokam į daugybą
+MA21    # į RAX padedam didesnę reikšmę #x72
+SU20    # iš RAX atimam reikšmę esančią 2 bloko 0 žodyje
+SA24    # išsaugom atsakymą 2 bloke 4 žodyje
+
+MB21    # spausdinam atsakymą
+PNUM
+MB15    # -
+PTXT
+MB20
+PNUM
+MB16    # =
+PTXT
+MB24
+PNUM
+            #Daugyba (ats. 5 ir 6 žodyje)
+MB00
+$x80
+MA20    # Į RAX padedam pirmą skaičių # $x7F
+MU21    # Padauginam RAX iš antro skaičiaus
+SB25
+SA26    (sutaisyt dėl overflow)
+MB20
+PNUM
+MB17    # x
+PTXT
+MB21
+PNUM
+MB16    # =
+PTXT
+MB25
+PNUM
+MB26
+PNUM
+
+            #Dalyba (sveika dalis 7 žodyje)
+$x90
+MA20
+DI21    # dalyba
+SA27
+MB20
+PNUM
+MB18    # /
+PTXT
+MB21
+PNUM
+MB16    # =
+PTXT
+MB27
+PNUM
+
+
+#Paprasyti ivesti kelis zodzius
+# Juos nuskaityti ir tarkim parasyt viska didziosiomis raidemis
+
+
+
+HALT    # Programos pabaiga
+!!!!    # Failo pabaiga
