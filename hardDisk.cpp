@@ -1,17 +1,14 @@
+#include "hardDisk.h"
 #include <iostream>
-#include <cstdint>
-
 
 using namespace std;
 
-class HardDisk{
-    private:
-      uint32_t memory[3200];
-    public:
-      HardDisk();
-      ~HardDisk();
+HardDisk::HardDisk() {
+}
 
-    uint32_t getWord(int number);
-    
+HardDisk::~HardDisk() {
+}
 
-};
+uint32_t HardDisk::getWord(const uint16_t number) const {
+    return memory[number];
+}

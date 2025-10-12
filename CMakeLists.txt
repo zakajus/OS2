@@ -8,4 +8,5 @@ add_executable(OS2 main.cpp
         virtualMachine.cpp
         realMachine.cpp
         hardDisk.cpp
-        monitor.cpp)
+        monitor.cpp
+        hardDisk.h)
