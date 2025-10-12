@@ -1,6 +1,10 @@
 #include <iostream>
 
 using namespace std;
+#include "realMachine.h"
+#include "monitor.h"
+#include "keyboard.h"
+
 
 int main() {
     //isvest kazka i ekrana (pasisveikinima:DD)
@@ -11,19 +15,38 @@ int main() {
     //Spausdinti sekancia vykdoma komanda
     //isoriniu irenginiu busenos                    kas cia?
     //Vykdomos komandos VM puslapio reikšmės.
+    Monitor monitor;
+    Keyboard keyboard;
+    RealMachine realMachine(monitor, keyboard);
 
-    VirtualMachine virtualMachine1;
-    RealMachine realMachine1;
+    int choice = 0;
+    cout << "Choose mode: (1) - run everything at once; (2) - stepping mode" << endl;
+    cin >> choice;
 
-    while(1){
-        virtualMachine1.runNextCommand();
-        realMachine1.test_();
+    if(choice = 1){
+
+    }
+    if(choice = 2){
+        cout << "Press space to make a step. Press q to exit." << endl;
+        while(1){
+            char key;
+            cin.get(key);
+        
+            if(key == ' '){
+                realMachine.nextStep();
+            }
+            else if(key == 'q' || key == 'Q'){
+                break;
+            }
+        }
         
     }
-    //po vykdomu komandu tikrinti SI, PI, TI reiksmes
 
-    //cia ir sukurt virtualias masinas
+    while(1){
+        
+        realMachine.test_();
+        break;
+    }
 
-    
     return 0;
 }
