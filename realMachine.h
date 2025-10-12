@@ -53,6 +53,7 @@ class RealMachine{
 
         void saveWordToMemoryFromAx(int number);
         void saveWordToMemoryFromBx(int number);
+        void nextStep();
 
         void test_();
 };

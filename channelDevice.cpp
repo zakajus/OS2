@@ -129,3 +129,5 @@ void ChannelDevice::copyFromInputStream(uint8_t* dest) {
 void ChannelDevice::copyToOutputStream(const uint8_t* src) {
     monitor->display(src, rnum*4);
 }
+
+
