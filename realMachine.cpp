@@ -1,18 +1,17 @@
 #include "realMachine.h"
 #include "channelDevice.h"
+#include "hardDisk.h"
 
 using namespace std;
 
-RealMachine::RealMachine(Monitor& monitor, Keyboard& keyboard) 
+RealMachine::RealMachine(Monitor& monitor, Keyboard& keyboard, HardDisk& hardDisk) 
     : rax(0), rbx(0), mode(0), ds(0), cs(0), pc(0), ti(0), pi(0), si(0), ptr(0), virtualMachine(nullptr) {
-    
-    // Initialize memory
+
     memset(userMemory, 0, sizeof(userMemory));
     memset(supervisorMemory, 0, sizeof(supervisorMemory));
-    
-    // Create ChannelDevice with pointers to memory
+
     channelDevice = new ChannelDevice(
-        this, userMemory, supervisorMemory, &monitor, &keyboard);
+        this, userMemory, supervisorMemory, &monitor, &keyboard, &hardDisk);
     
     for (int i = 0; i < 102; i++) {
         freeBlocks.push_back(i);
@@ -96,9 +95,11 @@ void RealMachine::test_(){
                 channelDevice->setST(4); // 4- kopijuojam is klaviaturos
                 channelDevice->setRNUM(4);
                 channelDevice->xchg();
+                rbx = channelDevice->getReg();
                 break;
             case 3:
                 //PNUM
+                channelDevice->setReg(rbx);
                 channelDevice->setDT(3); // 3 -isvedimo srautas
                 channelDevice->setST(5); // 5 - kopijuojam is RBX
                 channelDevice->setRNUM(4);
@@ -107,6 +108,7 @@ void RealMachine::test_(){
                 break;
             case 4:
                 //PTXT
+                channelDevice->setReg(rbx);
                 channelDevice->setDT(3); // 3 -isvedimo srautas
                 channelDevice->setST(5); // 5 - kopijuojam is RBX
                 channelDevice->setRNUM(4);
@@ -121,7 +123,7 @@ void RealMachine::test_(){
         }
     }
     if(pi > 0){
-        switch (pi){
+        switch (pi){ //galima arba ignoruot arba isjungt viska lauk ir pritnit viska kas ne taip
             case 1:
                 //wrong address
                 break;

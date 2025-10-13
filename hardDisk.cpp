@@ -46,3 +46,25 @@ bool HardDisk::fileWasModified() {
 uint32_t HardDisk::getWord(const int number) const {
     return memory[number];
 }
+
+
+vector<uint8_t> HardDisk::readBlock(const int fromWord, const int wordCount) const {
+    if (fromWord + wordCount >= HDD_SIZE) {
+        realMachine->changePI(1);
+        break;
+    }
+
+    vector<uint8_t> block;
+    block.reserve(byteCount);
+
+    for (int i = 0; i < wordCount; ++i) {
+        block.push_back(HardDisk::getWord(fromWord + i));
+    }
+    
+    return block;
+
+} // TODO: implement 16 zodziu po 4 baitus
+
+uint32_t* HardDisk::getMemoryPointer()  {
+    return this->memory;
+}

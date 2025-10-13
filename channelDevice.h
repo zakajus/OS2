@@ -11,6 +11,7 @@
 class RealMachine;
 class Monitor;
 class Keyboard;
+class HardDisk;
 
 using namespace std;
 
@@ -19,11 +20,12 @@ private:
     uint16_t sb;
     uint16_t db;
     uint32_t off;
-    uint32_t rnum; //how many bytes  to copy
+    uint32_t rnum; //how many words  to copy
     uint32_t name;
     uint8_t st;
     uint8_t dt;
     uint8_t isNumber; // 0 - false, 1 -true
+    uint32_t reg; //spausdinimui/irasymo nes nieko negali zinot apis os registrus
 
 
     uint32_t* userMemory;
@@ -31,17 +33,20 @@ private:
     RealMachine* realMachine;
     Monitor* monitor;
     Keyboard* keyboard;
-    const size_t userMemSize = 1024; //16 blocks * 16 words * 4 bytes
-    const size_t supervisorMemSize = 2048; //32 blocks * 16 words * 4 bytes
-    const size_t BLOCK_SIZE = 64; // 16 words × 4 bytes
+    HardDisk* hardDisk;
+    const size_t userMemSize = 256; //16 blocks * 16 words 
+    const size_t supervisorMemSize = 512; //32 blocks * 16 words 
+    const size_t BLOCK_SIZE = 16; // 16 words 
 
 public:
-     ChannelDevice(RealMachine* realMachine, uint32_t* userMemory, uint32_t* supervisorMemory, Monitor* monitor, Keyboard* keyboard) 
+     ChannelDevice(RealMachine* realMachine, uint32_t* userMemory, uint32_t* supervisorMemory, Monitor* monitor, Keyboard* keyboard, HardDisk* hardDisk) 
         : sb(0), db(0), off(0), rnum(0), name(0), st(1), dt(1), isNumber(0),
           userMemory(userMemory), supervisorMemory(supervisorMemory), realMachine(realMachine),
-          monitor(monitor), keyboard(keyboard) {}
+          monitor(monitor), keyboard(keyboard), hardDisk(hardDisk) {}
     ~ChannelDevice(){}
 
+    void setReg(uint32_t value) { rnum = value; }
+    uint32_t getReg(){return reg;}
     void setSB(uint16_t value) { sb = value; }
     void setDB(uint16_t value) { db = value; }
     void setOFF(uint32_t value) { off = value; }
@@ -59,16 +64,16 @@ public:
         dt = value; 
     }
 
-    void copyFromUserMemory(uint8_t* dest, uint32_t offset);
-    void copyFromSupervisorMemory(uint8_t* dest, uint32_t offset);
-    void copyFromExternalMemory(uint8_t* dest);
-    void copyFromInputStream(uint8_t* dest);
-    void copyFromRbx(uint8_t* dest);
+    void copyFromUserMemory(uint32_t* dest, uint32_t offset);
+    void copyFromSupervisorMemory(uint32_t* dest, uint32_t offset);
+    void copyFromExternalMemory(uint32_t* dest);
+    void copyFromInputStream(uint32_t* dest);
+    void copyFromRbx(uint32_t* dest);
 
-    void copyToUserMemory(uint32_t offset, const uint8_t* src);
-    void copyToSupervisorMemory(uint32_t offset, const uint8_t* src);
-    void copyToOutputStream(const uint8_t* src);
-    void copyToRbx(const uint8_t* src);
+    void copyToUserMemory(uint32_t offset, const uint32_t* src);
+    void copyToSupervisorMemory(uint32_t offset, const uint32_t* src);
+    void copyToOutputStream(const uint32_t* src);
+    void copyToRbx(const uint32_t* src);
     void xchg();
     
 };

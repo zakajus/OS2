@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <filesystem>
+#include <vector>
 
 using namespace std;
 
@@ -29,7 +30,12 @@ public:
     // Iskvietimas gali atnaujinti lastModificationTime, tai jei reikia keliems palyginimams, reiksme issaugoti i kintamaji
     bool fileWasModified();
 
+    uint32_t* getMemoryPointer();
+
     uint32_t getWord(int number) const; // TODO: implement
+    
+    vector<uint8_t> readBlock(const int fromWord, const int wordCount) const; // TODO: implement 16 zodziu po 4 baitus
+
 };
 
 #endif // HARDDISK_H

@@ -4,6 +4,7 @@ using namespace std;
 #include "realMachine.h"
 #include "monitor.h"
 #include "keyboard.h"
+#include "hardDisk.h"
 
 
 int main() {
@@ -17,7 +18,9 @@ int main() {
     //Vykdomos komandos VM puslapio reikšmės.
     Monitor monitor;
     Keyboard keyboard;
-    RealMachine realMachine(monitor, keyboard);
+    HardDisk hardisk;
+    RealMachine realMachine(monitor, keyboard, hardisk);
+    
 
     int choice = 0;
     cout << "Choose mode: (1) - run everything at once; (2) - stepping mode" << endl;

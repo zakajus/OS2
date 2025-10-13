@@ -40,6 +40,7 @@ struct StatusFlag{
     unsigned int of : 1; //overflow flag
     unsigned int af : 1; //auxiliary flag
     unsigned int zf : 1; //zero flag
+    //loginimo flagas arba klassee
 };
 
 class VirtualMachine

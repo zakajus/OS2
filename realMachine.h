@@ -37,7 +37,7 @@ private:
     vector<int> occupiedBlocks;
 
 public:
-    RealMachine(Monitor &monitor, Keyboard &keyboard);
+    RealMachine(Monitor &monitor, Keyboard &keyboard, HardDisk& hardDisk);
 
     int translateLocalAdrressToRealAddress(uint8_t x, uint8_t y);
     void printAllRegisterValues();
@@ -46,14 +46,6 @@ public:
     void printRealMemory();
     void changeSI(int i);
     void changePI(int i);
-
-    uint32_t getRBX(){
-        return rbx;
-    }
-
-    void setRBX(uint32_t value){
-        rbx = value;
-    }
 
     void allocateMemoryForVirtualMachine();
 
