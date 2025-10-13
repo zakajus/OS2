@@ -47,7 +47,13 @@ int main() {
 
     while(1){
         
-        realMachine.test_();
+        int x = realMachine.test_();
+        if(x == -1){
+            break;
+        }
+        if (x == 1){
+            break; //arba paleist kita programa uzkrovus
+        }
         break;
     }
 

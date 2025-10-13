@@ -57,7 +57,7 @@ public:
 
     void saveWordToMemoryFromBx(int number);
 
-    void test_();
+    int test_();
 };
 
 #endif

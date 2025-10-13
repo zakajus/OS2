@@ -7,10 +7,9 @@
 
 class Monitor {
 public:
-	void display(const uint32_t* src, uint32_t bytes);
-	void display(const uint32_t* src, uint32_t bytes, bool isNumber);
-	void displayNumber(const uint32_t* src, uint32_t bytes);
-	void displayText(const uint32_t* src, uint32_t bytes);
+	void display(const uint32_t* src, uint32_t words, bool isNumber);
+	void displayNumber(const uint32_t* src, uint32_t words);
+	void displayText(const uint32_t* src, uint32_t words);
 };
 
 #endif

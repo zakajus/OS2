@@ -82,13 +82,13 @@ void RealMachine::saveWordToMemoryFromBx(int number){ //sita paziuret ar gerai
     userMemory[number] = rbx;
 }
 
-void RealMachine::test_(){
+int RealMachine::test_(){
     //pries iskvieciant paprogrames issaugoti registru reiksmes kazkur
     if(si > 0){
         switch (si){
             case 1:
                 //HALT
-                break;
+                return 1; //paleist kita programa arba baigt darba
             case 2:
                 //READ
                 channelDevice->setDT(4); // 4 - kopijuojam i rbx
@@ -117,6 +117,9 @@ void RealMachine::test_(){
                 break;
             case 5:
                 //EXEx
+                //rbx failo pavadinimas
+                //x - parametru blokas
+                //paleidziam nauja programa
                 break;
             default:
                 break;
@@ -125,17 +128,17 @@ void RealMachine::test_(){
     if(pi > 0){
         switch (pi){ //galima arba ignoruot arba isjungt viska lauk ir pritnit viska kas ne taip
             case 1:
-                //wrong address
-                break;
+                cout << "Address out of bounds." << endl;
+                return -1;
             case 2:
-                //wrong operation code
-                break;
+                cout << "Wrong operation code." << endl;
+                return -1;
             case 3:
-                //wrong inicialization/assignment
-                break;
+                cout << "Wrong inicialization or assigment. " << endl;
+                return -1;
             case 4:
-                // division from 0
-                break;
+                cout << "Division from 0." << endl;
+                return -1;
             default:
                 break;
         }
