@@ -19,10 +19,12 @@ private:
     uint16_t sb;
     uint16_t db;
     uint32_t off;
-    uint32_t rnum; //how many words to copy
+    uint32_t rnum; //how many bytes  to copy
     uint32_t name;
     uint8_t st;
     uint8_t dt;
+    uint8_t isNumber; // 0 - false, 1 -true
+
 
     uint32_t* userMemory;
     uint32_t* supervisorMemory;
@@ -35,7 +37,7 @@ private:
 
 public:
      ChannelDevice(RealMachine* realMachine, uint32_t* userMemory, uint32_t* supervisorMemory, Monitor* monitor, Keyboard* keyboard) 
-        : sb(0), db(0), off(0), rnum(0), name(0), st(1), dt(1),
+        : sb(0), db(0), off(0), rnum(0), name(0), st(1), dt(1), isNumber(0),
           userMemory(userMemory), supervisorMemory(supervisorMemory), realMachine(realMachine),
           monitor(monitor), keyboard(keyboard) {}
     ~ChannelDevice(){}
@@ -45,6 +47,7 @@ public:
     void setOFF(uint32_t value) { off = value; }
     void setRNUM(uint32_t value) { rnum = value; }
     void setNAME(uint32_t value) { name = value; }
+    void setIsNumber(uint8_t value) {isNumber = value;}
     void setST(uint8_t value) { 
         if (value < 1 || value > 4) 
             realMachine->changePI(3);
@@ -60,10 +63,12 @@ public:
     void copyFromSupervisorMemory(uint8_t* dest, uint32_t offset);
     void copyFromExternalMemory(uint8_t* dest);
     void copyFromInputStream(uint8_t* dest);
+    void copyFromRbx(uint8_t* dest);
 
     void copyToUserMemory(uint32_t offset, const uint8_t* src);
     void copyToSupervisorMemory(uint32_t offset, const uint8_t* src);
     void copyToOutputStream(const uint8_t* src);
+    void copyToRbx(const uint8_t* src);
     void xchg();
     
 };

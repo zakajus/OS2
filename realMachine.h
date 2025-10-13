@@ -40,19 +40,20 @@ public:
     RealMachine(Monitor &monitor, Keyboard &keyboard);
 
     int translateLocalAdrressToRealAddress(uint8_t x, uint8_t y);
-
     void printAllRegisterValues();
-
     void printCurrentPage();
-
     void printVirtualMemory();
-
     void printRealMemory();
-
     void changeSI(int i);
-
     void changePI(int i);
 
+    uint32_t getRBX(){
+        return rbx;
+    }
+
+    void setRBX(uint32_t value){
+        rbx = value;
+    }
 
     void allocateMemoryForVirtualMachine();
 

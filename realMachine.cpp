@@ -92,12 +92,26 @@ void RealMachine::test_(){
                 break;
             case 2:
                 //READ
+                channelDevice->setDT(4); // 4 - kopijuojam i rbx
+                channelDevice->setST(4); // 4- kopijuojam is klaviaturos
+                channelDevice->setRNUM(4);
+                channelDevice->xchg();
                 break;
             case 3:
                 //PNUM
+                channelDevice->setDT(3); // 3 -isvedimo srautas
+                channelDevice->setST(5); // 5 - kopijuojam is RBX
+                channelDevice->setRNUM(4);
+                channelDevice->setIsNumber(1);
+                channelDevice->xchg();
                 break;
             case 4:
                 //PTXT
+                channelDevice->setDT(3); // 3 -isvedimo srautas
+                channelDevice->setST(5); // 5 - kopijuojam is RBX
+                channelDevice->setRNUM(4);
+                channelDevice->setIsNumber(0);
+                channelDevice->xchg();
                 break;
             case 5:
                 //EXEx

@@ -24,6 +24,9 @@ void ChannelDevice::xchg(){
         case 4: // Input stream
             copyFromInputStream(buffer.data());
             break;
+        case 5:
+            copyFromRbx(buffer.data());
+            break;
         default:
             realMachine->changePI(3);
     }
@@ -39,6 +42,8 @@ void ChannelDevice::xchg(){
         case 3: // Output stream
             copyToOutputStream(buffer.data());
             break;
+        case 4:
+            copyToRbx(buffer.data());
         default:
             realMachine->changePI(3);
     }
@@ -49,14 +54,14 @@ void ChannelDevice::copyFromUserMemory(uint8_t* dest, uint32_t offset) {
     if (rnum + offset > userMemSize) {
         realMachine->changePI(1);
     }
-    memcpy(dest, userMemory + offset, rnum*4);
+    memcpy(dest, userMemory + offset, rnum);
 }
 
 void ChannelDevice::copyFromSupervisorMemory(uint8_t* dest, uint32_t offset) {
     if (rnum + offset > supervisorMemSize) {
         realMachine->changePI(1);
     }
-    memcpy(dest, supervisorMemory + offset, rnum*4);
+    memcpy(dest, supervisorMemory + offset, rnum);
 }
 
 void ChannelDevice::copyFromExternalMemory(uint8_t* dest) {
@@ -67,7 +72,7 @@ void ChannelDevice::copyFromExternalMemory(uint8_t* dest) {
         return;
     }
 
-    uint8_t buffer[rnum*4];
+    uint8_t buffer[rnum];
     uint8_t temp[4];
     const uint8_t target[4] = {'*', '*', '*', '*'};
 
@@ -94,11 +99,11 @@ void ChannelDevice::copyFromExternalMemory(uint8_t* dest) {
         }
     }
     //
-    file.read((char*)buffer, rnum*4); // Cast to char*
+    file.read((char*)buffer, rnum); // Cast to char*
     streamsize bytesRead = file.gcount();
     
-    if(bytesRead != rnum*4) {
-        cerr << "Warning: Only read " << bytesRead << " bytes out of " << rnum*4 << endl;
+    if(bytesRead != rnum) {
+        cerr << "Warning: Only read " << bytesRead << " bytes out of " << rnum << endl;
     }
     memcpy(dest, buffer, bytesRead); 
     //cout << "Bytes read: " << bytesRead << endl;
@@ -111,23 +116,42 @@ void ChannelDevice::copyToSupervisorMemory(uint32_t offset, const uint8_t* src) 
     if (offset + rnum > supervisorMemSize) {
         realMachine->changePI(1);
     }
-    memcpy(supervisorMemory + offset, src, rnum*4);
+    memcpy(supervisorMemory + offset, src, rnum);
 }
 
 void ChannelDevice::copyToUserMemory(uint32_t offset, const uint8_t* src) {
     if (offset + rnum > userMemSize) {
         realMachine->changePI(1);
     }
-    memcpy(userMemory + offset, src, rnum*4);
+    memcpy(userMemory + offset, src, rnum);
 }
 
 
 void ChannelDevice::copyFromInputStream(uint8_t* dest) {    
-    keyboard->getBytes(dest, rnum*4);
+    keyboard->getBytes(dest, rnum);
 }
 
 void ChannelDevice::copyToOutputStream(const uint8_t* src) {
-    monitor->display(src, rnum*4);
+    monitor->display(src, rnum, isNumber);
 }
 
+void ChannelDevice::copyFromRbx(uint8_t* dest){
+    if (rnum > 4) {
+        realMachine->changePI(3); 
+        return;
+    }
+    
+    uint32_t rbxValue = realMachine->getRBX(); 
+    memcpy(dest, &rbxValue, rnum);
+}
 
+void ChannelDevice::copyToRbx(const uint8_t* src){
+    if (rnum > 4) {
+        realMachine->changePI(3); 
+        return;
+    }
+    
+    uint32_t rbxValue = 0;
+    memcpy(&rbxValue, src, rnum);
+    realMachine->setRBX(rbxValue);
+}
