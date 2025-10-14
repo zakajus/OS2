@@ -39,7 +39,7 @@ private:
 public:
     RealMachine(Monitor &monitor, Keyboard &keyboard, HardDisk& hardDisk);
 
-    int translateLocalAdrressToRealAddress(uint8_t x, uint8_t y);
+    int translateLocalAdressToRealAddress(uint8_t x, uint8_t y);
     void printAllRegisterValues();
     void printCurrentPage();
     void printVirtualMemory();

@@ -18,7 +18,7 @@ RealMachine::RealMachine(Monitor& monitor, Keyboard& keyboard, HardDisk& hardDis
     }
 }
 
-int RealMachine::translateLocalAdrressToRealAddress(uint8_t x, uint8_t y){
+int RealMachine::translateLocalAdressToRealAddress(uint8_t x, uint8_t y){
     uint32_t pageTable[16];
     
     for(int i = 0; i < 16; i++){
@@ -37,10 +37,22 @@ void RealMachine::printCurrentPage(){
 
 }
 void RealMachine::printVirtualMemory(){
-
+    for(int i = 0; i < 16; ++i){
+        for(int j = 0; j < 16; ++j){
+            int address = translateLocalAdressToRealAddress(i, j);
+            uint32_t word = userMemory[address];
+            printf("0x%08X\n", word);
+        }
+        cout << endl;
+    }
 }
 void RealMachine::printRealMemory(){
-
+    for(int i = 0; i < 102; ++i){
+        for(int j = 0; j < 16; ++j){
+            uint32_t word = userMemory[i*16+j];
+            printf("0x%08X\n", word);
+        }
+    }
 }
 
 void RealMachine::changeSI(int i){
@@ -62,6 +74,10 @@ void RealMachine::allocateMemoryForVirtualMachine(){
         temp[i] = randomIndex;
         freeBlocks[randomIndex] = freeBlocks.back();
         freeBlocks.pop_back();
+    }
+    ptr = temp[0];
+    for(int i = 1; i < 17; ++i){
+        userMemory[ptr*16 + i-1] = temp[i];
     }
 }
 
@@ -148,4 +164,5 @@ int RealMachine::test_(){
         //change to other program
     }
     //atstatyti registru reiksmes
+    return 0;
 }
