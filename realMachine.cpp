@@ -44,13 +44,24 @@ void RealMachine::rm_run(){
 
     for(int i = 0; i < 16; ++i){
         channelDevice->setSB(i); //is kurio takelio kopijuojam
-        //
-        channelDevice->setDB(i); //i kuri takeli kopijuojam
+        channelDevice->setDB(pageTable[i]); //i kuri takeli kopijuojam
         channelDevice->xchg();
     }
-   
+    pc = 0;
+    //cs = 48; //0x30
+    cs = 0; //?
+    ds = 0;
+    virtualMachine = new VirtualMachine(rax, rbx, ds, cs, pc, sf, *this);
 
-
+    for(int i = 0; i < 16; ++i){
+        for(int j = 0; j < 16; ++j){
+            uint32_t command = userMemory[pageTable[i]+j];
+            virtualMachine->runNextCommand(command);
+            if(test_() != 0){
+                break;
+            }
+        }
+    }
 }
 
 int RealMachine::translateLocalAdressToRealAddress(uint8_t x, uint8_t y){

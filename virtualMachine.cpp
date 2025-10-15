@@ -14,7 +14,7 @@ VirtualMachine::VirtualMachine(uint32_t &rax, uint32_t &rbx,  uint16_t &ds, uint
 }
 
 void VirtualMachine::add(const uint8_t x, const uint8_t y) const { // suziuret ar cia viskas logiska
-        int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
+        int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
         uint32_t valueToAdd = realMachine->getWordFromMemory(realAddress);
 
     uint32_t originalRax = *rax;
@@ -26,7 +26,7 @@ void VirtualMachine::add(const uint8_t x, const uint8_t y) const { // suziuret a
     //jei buvo overflow i RBX padet 1
 }
 void VirtualMachine::substract(const uint8_t x, const uint8_t y) const {
-    int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
+    int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     uint32_t valueToSubstract = realMachine->getWordFromMemory(realAddress);
     *rax -= valueToSubstract;
     if(*rax == 0){
@@ -34,7 +34,7 @@ void VirtualMachine::substract(const uint8_t x, const uint8_t y) const {
     }
 }
 void VirtualMachine::multiply(const uint8_t x, const uint8_t y) const { //istestuot paziuret kur tas musu atsakymas galu gale gaunasi
-    int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
+    int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     uint32_t valueToMultiply = realMachine->getWordFromMemory(realAddress);
     uint32_t originalRax = *rax;
 
@@ -51,7 +51,7 @@ void VirtualMachine::multiply(const uint8_t x, const uint8_t y) const { //istest
     sf->zf = (*rax == 0) ? 1 : 0;
 }
 void VirtualMachine::divide(const uint8_t x, const uint8_t y) const {
-    int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
+    int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     uint32_t valueToDivideFrom = realMachine->getWordFromMemory(realAddress);
     *rax /= valueToDivideFrom;
 
@@ -100,7 +100,7 @@ void VirtualMachine::not_() const {
 
 // VISIEMS JUMPAMS: tiesiog pakeisti program counteri
 void VirtualMachine::jump(const uint8_t x, const uint8_t y) const {
-    int const realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
+    int const realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     *pc = realMachine->getWordFromMemory(realAddress);
 }
 
@@ -126,19 +126,19 @@ void VirtualMachine::jumpAbove(const uint8_t x, const uint8_t y) const {
     }
 }
 void VirtualMachine::moveToAX(const uint8_t x, const uint8_t y) const {
-    int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
+    int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     *rax = realMachine->getWordFromMemory(realAddress);
 }
 void VirtualMachine::moveToBX(const uint8_t x, const uint8_t y) const {
-    int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
+    int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     *rbx = realMachine->getWordFromMemory(realAddress);
 }
 void VirtualMachine::saveFromAX(const uint8_t x, const uint8_t y) const { //patikrint
-    int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
+    int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     realMachine->saveWordToMemoryFromAx(realAddress);
 }
 void VirtualMachine::saveFromBX(const uint8_t x, const uint8_t y) const { //patikrint
-    int realAddress = realMachine->translateLocalAdrressToRealAddress(x, y);
+    int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     realMachine->saveWordToMemoryFromBx(realAddress);
 }
 void VirtualMachine::execute(const uint8_t x) const {

@@ -53,6 +53,7 @@ class VirtualMachine
         uint16_t* pc;
         StatusFlag* sf;
         RealMachine* realMachine;
+        uint32_t memory[256];
     public:
         VirtualMachine(uint32_t &rax, uint32_t &rbx,  uint16_t &ds, uint16_t &cs, uint16_t &pc, StatusFlag &sf, RealMachine &realMachine);
 
