@@ -18,6 +18,11 @@ RealMachine::RealMachine(Monitor& monitor, Keyboard& keyboard, HardDisk& hardDis
     }
 }
 
+int RealMachine::validateProgram(){
+    //eit per supervizorine ir kazkaip tikrint
+    return 0;
+}
+
 //nebaigta funkcija reik taisyt bet dabar smegenys neveikia
 void RealMachine::rm_run(){
     channelDevice->setST(3); //is isorines
@@ -29,6 +34,10 @@ void RealMachine::rm_run(){
     channelDevice->setSB(0);
     channelDevice->xchg();
     //ivykdyt validacija
+    if(validateProgram() == 1){
+        return;
+    }
+
 
     allocateMemoryForVirtualMachine();
     //ptr dabar rodo i puslapiu lentele

@@ -48,7 +48,7 @@ public:
     void changePI(int i);
 
     void rm_run();
-    void validateProgram();
+    int validateProgram();
 
     void allocateMemoryForVirtualMachine();
     void freeMemoryFromVirtualMachine();
