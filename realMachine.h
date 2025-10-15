@@ -41,13 +41,17 @@ public:
 
     int translateLocalAdressToRealAddress(uint8_t x, uint8_t y);
     void printAllRegisterValues();
-    void printCurrentPage();
+    void printCurrentPage(int x);
     void printVirtualMemory();
     void printRealMemory();
     void changeSI(int i);
     void changePI(int i);
 
+    void rm_run();
+    void validateProgram();
+
     void allocateMemoryForVirtualMachine();
+    void freeMemoryFromVirtualMachine();
 
     uint32_t getWordFromMemory(int number);
 

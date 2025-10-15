@@ -1,7 +1,7 @@
 #include "realMachine.h"
 #include "channelDevice.h"
 #include "hardDisk.h"
-
+#include <algorithm>
 using namespace std;
 
 RealMachine::RealMachine(Monitor& monitor, Keyboard& keyboard, HardDisk& hardDisk) 
@@ -16,6 +16,41 @@ RealMachine::RealMachine(Monitor& monitor, Keyboard& keyboard, HardDisk& hardDis
     for (int i = 0; i < 102; i++) {
         freeBlocks.push_back(i);
     }
+}
+
+//nebaigta funkcija reik taisyt bet dabar smegenys neveikia
+void RealMachine::rm_run(){
+    channelDevice->setST(3); //is isorines
+    channelDevice->setDT(2); //i supervizorine
+    channelDevice->setNAME(0); //pakeist i tikra pavadinima
+    channelDevice->setRNUM(256); //16
+    channelDevice->setOFF(0);
+    channelDevice->setDB(0);
+    channelDevice->setSB(0);
+    channelDevice->xchg();
+    //ivykdyt validacija
+
+    allocateMemoryForVirtualMachine();
+    //ptr dabar rodo i puslapiu lentele
+    channelDevice->setST(2); //is supervizorines
+    channelDevice->setDT(1); //i vartotojo
+    channelDevice->setRNUM(16);
+
+    uint32_t pageTable[16];
+    
+    for(int i = 0; i < 16; i++){
+        pageTable[i] = userMemory[ptr * 16 + i];
+    }
+
+    for(int i = 0; i < 16; ++i){
+        channelDevice->setSB(i); //is kurio takelio kopijuojam
+        //
+        channelDevice->setDB(i); //i kuri takeli kopijuojam
+        channelDevice->xchg();
+    }
+   
+
+
 }
 
 int RealMachine::translateLocalAdressToRealAddress(uint8_t x, uint8_t y){
@@ -33,8 +68,14 @@ void RealMachine::printAllRegisterValues(){
     cout << "RAX: " << rax << " RBX: " << rbx << " MODE: " << mode << " DS: " << ds << " CS: " << cs << " PC: " << pc << " TI: " << ti << " DI: " << pi << " SI: " << si << " PTR: " << ptr << endl;
     cout << "Status flag: CF: " << sf.cf << " OF: " << sf.of << " AF: " << sf.af << " ZF: " << sf.zf << endl;
 }
-void RealMachine::printCurrentPage(){
-
+void RealMachine::printCurrentPage(int x){
+    //x - virtualios masinos puslapis
+    int realPageAddress = userMemory[ptr * 16 + x];
+    for(int i = 0; i < 16; ++i){
+        uint32_t word = userMemory[realPageAddress+i];
+        printf("0x%08X\n", word);
+    }
+    cout << endl;
 }
 void RealMachine::printVirtualMemory(){
     for(int i = 0; i < 16; ++i){
@@ -79,6 +120,20 @@ void RealMachine::allocateMemoryForVirtualMachine(){
     for(int i = 1; i < 17; ++i){
         userMemory[ptr*16 + i-1] = temp[i];
     }
+}
+
+void RealMachine::freeMemoryFromVirtualMachine(){
+    uint32_t temp[16];
+    for(int i = 0; i < 16; ++i){
+        uint32_t valueToFree = userMemory[ptr*16 + i];
+        freeBlocks.emplace_back(valueToFree);
+
+        auto it = std::find(occupiedBlocks.begin(), occupiedBlocks.end(), valueToFree);
+        if(it != occupiedBlocks.end()){
+            occupiedBlocks.erase(it);
+        }
+    }
+    
 }
 
 uint32_t RealMachine::getWordFromMemory(int number){
