@@ -18,12 +18,67 @@ RealMachine::RealMachine(Monitor& monitor, Keyboard& keyboard, HardDisk& hardDis
     }
 }
 
-int RealMachine::validateProgram(){
-    //eit per supervizorine ir kazkaip tikrint
-    return 0;
+bool isValidHexDigit(char c) {
+    return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'F');
 }
 
-//nebaigta funkcija reik taisyt bet dabar smegenys neveikia
+bool isValidInstruction(const char* word) {
+    if (word[0] == '$' && isValidHexDigit(word[1]) && 
+        word[2] == '0' && word[3] == '0') {
+        return true;
+    }
+    
+    const char* twoParamOps[] = {
+        "JP", "JZ", "JN", "JB", "JA", 
+        "MA", "MB", "SA", "SB",
+        "SU", "MU", "DI"
+    };
+    
+    for (const char* op : twoParamOps) {
+        if (word[0] == op[0] && word[1] == op[1] && 
+            isValidHexDigit(word[2]) && isValidHexDigit(word[3])) {
+            return true;
+        }
+    }
+    
+    if (word[0] == 'E' && word[1] == 'X' && 
+        word[2] == 'E' && isValidHexDigit(word[3])) {
+        return true;
+    }
+    const char* zeroParamOps[] = {
+        "READ", "PNUM", "PTXX", 
+        "AND_", "OR__", "NOT_", 
+        "HALT", "CMP_"
+    };
+    
+    for (const char* op : zeroParamOps) {
+        if (memcmp(word, op, 4) == 0) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+int RealMachine::validateProgram() {
+    uint32_t firstWord = supervisorMemory[0];
+    
+    if (memcmp(&firstWord, "$AMJ", 4) != 0) {
+        return -1; 
+    }
+    
+    for (int i = 1; i < 256; i++) { //pakeist ta 256 i kintamaji
+        uint32_t word = supervisorMemory[i];
+        char* instruction = (char*)&word;
+        
+        if (!isValidInstruction(instruction)) {
+            return i;
+        }
+    }
+    
+    return 0; 
+}
+
 void RealMachine::rm_run(){
     channelDevice->setST(3); //is isorines
     channelDevice->setDT(2); //i supervizorine
@@ -62,13 +117,14 @@ void RealMachine::rm_run(){
     ds = 0;
     virtualMachine = new VirtualMachine(rax, rbx, ds, cs, pc, sf, *this);
 
-    for(int i = 0; i < 16; ++i){
-        for(int j = 0; j < 16; ++j){
-            uint32_t command = userMemory[pageTable[i]+j];
-            virtualMachine->runNextCommand(command);
-            if(test_() != 0){
-                break;
-            }
+    while(1){
+        int i = pc / 16;
+        int j = pc % 16;
+        uint32_t command = userMemory[pageTable[i]+j];
+        ++pc;
+        virtualMachine->runNextCommand(command);
+        if(test_() != 0){
+            break;
         }
     }
 }
