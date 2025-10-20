@@ -78,10 +78,8 @@ void RealMachine::testavimui(){
 
 
     for(int i = 0; i < 16; ++i){ //cia galimai reiks pakeist kad nebekopijuotu ten kkur nieko nebera
-        cout << endl;
         channelDevice->setSB(i); //is kurio takelio kopijuojam
         channelDevice->setDB(pageTable[i]); //i kuri takeli kopijuojam
-        cout << pageTable[i] << endl;
         channelDevice->xchg();
     }
 
@@ -94,7 +92,7 @@ void RealMachine::testavimui(){
     printAsASCII(userMemory, 1632);
 
     int kazkas = 0;
-    pc = 17;
+    pc = 48;
     while(1){
         int i = pc / 16;
         int j = pc % 16;
@@ -307,7 +305,7 @@ void RealMachine::rm_run(){
         channelDevice->setDB(pageTable[i]); //i kuri takeli kopijuojam
         channelDevice->xchg();
     }
-    pc = 0;
+    pc = 48;
     //cs = 48; //0x30
     cs = 0; //?
     ds = 0;
@@ -328,20 +326,10 @@ void RealMachine::rm_run(){
 
 uint32_t RealMachine::translateLocalAdressToRealAddress(uint8_t x, uint8_t y){
     uint32_t pageTable[16] = {0};
-    
     for(int i = 0; i < 16; i++){
         pageTable[i] = userMemory[ptr * 16 + i];
-        cout << pageTable[i] << endl;
     }
-    
-    cout << "x " << (int)x << endl;  // Cast to int for printing
-    uint32_t value = x;  // This works fine
-    cout << value << endl;
-
-    cout << "pagetable[1] " << pageTable[1] << endl; 
-    cout << "page table[x] " << pageTable[value] << " y " << y << endl;
     uint32_t realAddress = pageTable[x] * 16 + y;
-    
     return realAddress;
 }
 
@@ -378,15 +366,11 @@ void RealMachine::printRealMemory(){
 }
 
 void RealMachine::changeSI(uint8_t i){
-    cout << "jehe" << endl;
     si = i;
-    cout << "Jei cia tai si pasikeite i  "  << i << endl;
 }
 
 void RealMachine::changePI(uint8_t i){
-    //cout << "Alioo"
     pi = i;
-    cout << "Jei cia tai pi pasikeite i " << i << endl;
 }
 
 
@@ -441,7 +425,6 @@ void RealMachine::saveWordToMemoryFromBx(int number){ //sita paziuret ar gerai
 
 int RealMachine::test_(){
     //pries iskvieciant paprogrames issaugoti registru reiksmes kazkur
-    cout << "hello how are u " << endl;
     if(si > 0){
         switch (si){
             case 1:{
@@ -472,18 +455,12 @@ int RealMachine::test_(){
                 
             case 4:{
                 //PTXT
-                cout << "Nuo cia iki kito cout klaida"<< endl;
-                int x = pi;
-                cout << "Pi " << x << endl;
                 channelDevice->setReg(rbx);
                 channelDevice->setDT(3); // 3 -isvedimo srautas
                 channelDevice->setST(5); // 5 - kopijuojam is RBX
                 channelDevice->setRNUM(1);
                 channelDevice->setIsNumber(0);
                 channelDevice->xchg();
-                x = pi;
-                cout << "Pi " << x << endl;
-                cout << "Channel device xchng ivyko" << endl;
                 //break;
                 return 0;
             }
