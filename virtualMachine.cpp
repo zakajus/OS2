@@ -13,7 +13,7 @@ VirtualMachine::VirtualMachine(uint32_t &rax, uint32_t &rbx,  uint16_t &ds, uint
     this->realMachine = &realMachine;
 }
 
-void VirtualMachine::add(const uint8_t x, const uint8_t y) const { // suziuret ar cia viskas logiska
+void VirtualMachine::add( uint8_t x,  uint8_t y)  { // suziuret ar cia viskas logiska
         int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
         uint32_t valueToAdd = realMachine->getWordFromMemory(realAddress);
 
@@ -25,7 +25,7 @@ void VirtualMachine::add(const uint8_t x, const uint8_t y) const { // suziuret a
 
     //jei buvo overflow i RBX padet 1
 }
-void VirtualMachine::substract(const uint8_t x, const uint8_t y) const {
+void VirtualMachine::substract( uint8_t x,  uint8_t y)  {
     int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     uint32_t valueToSubstract = realMachine->getWordFromMemory(realAddress);
     *rax -= valueToSubstract;
@@ -33,7 +33,7 @@ void VirtualMachine::substract(const uint8_t x, const uint8_t y) const {
         sf->zf = 0;
     }
 }
-void VirtualMachine::multiply(const uint8_t x, const uint8_t y) const { //istestuot paziuret kur tas musu atsakymas galu gale gaunasi
+void VirtualMachine::multiply( uint8_t x,  uint8_t y)  { //istestuot paziuret kur tas musu atsakymas galu gale gaunasi
     int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     uint32_t valueToMultiply = realMachine->getWordFromMemory(realAddress);
     uint32_t originalRax = *rax;
@@ -50,7 +50,7 @@ void VirtualMachine::multiply(const uint8_t x, const uint8_t y) const { //istest
 
     sf->zf = (*rax == 0) ? 1 : 0;
 }
-void VirtualMachine::divide(const uint8_t x, const uint8_t y) const {
+void VirtualMachine::divide( uint8_t x,  uint8_t y)  {
     int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     uint32_t valueToDivideFrom = realMachine->getWordFromMemory(realAddress);
     *rax /= valueToDivideFrom;
@@ -63,7 +63,7 @@ void VirtualMachine::divide(const uint8_t x, const uint8_t y) const {
         sf->zf = 0;
     }
 }
-void VirtualMachine::compare() const {
+void VirtualMachine::compare()  {
     if(*rax > *rbx){//CF = 0, ZF = 0
         sf->cf = 0;
         sf->zf = 0;
@@ -77,21 +77,21 @@ void VirtualMachine::compare() const {
         sf->cf = 0;
     }
 }
-void VirtualMachine::and_() const {
+void VirtualMachine::and_()  {
     uint32_t word = realMachine->getNextWord();
     *rbx = *rax & word;
 
     sf->zf = (*rbx == 0) ? 1 : 0;  // Zero flag if result is 0
     sf->cf = 0; // CF is typically cleared for logical operations
 }
-void VirtualMachine::or_() const {
+void VirtualMachine::or_()  {
     uint32_t word = realMachine->getNextWord();
     *rbx = *rax | word;  // Bitwise OR, store result in RBX
     
     sf->zf = (*rbx == 0) ? 1 : 0;  // Zero flag if result is 0
     sf->cf = 0;  // CF typically cleared for logical operations
 }
-void VirtualMachine::not_() const {
+void VirtualMachine::not_()  {
     *rbx = ~(*rax);  // Bitwise NOT of RAX, store result in RBX
     
     sf->zf = (*rbx == 0) ? 1 : 0;
@@ -99,54 +99,75 @@ void VirtualMachine::not_() const {
 }
 
 // VISIEMS JUMPAMS: tiesiog pakeisti program counteri
-void VirtualMachine::jump(const uint8_t x, const uint8_t y) const {
-    int const realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
+void VirtualMachine::jump( uint8_t x,  uint8_t y)  {
+    int  realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     *pc = realMachine->getWordFromMemory(realAddress);
 }
 
-void VirtualMachine::jumpZero(const uint8_t x, const uint8_t y) const {
+void VirtualMachine::jumpZero( uint8_t x,  uint8_t y)  {
     if (sf->zf) {
         jump(x, y);
     }
 }
-void VirtualMachine::jumpNotCarry(const uint8_t x, const uint8_t y) const {
+void VirtualMachine::jumpNotCarry( uint8_t x,  uint8_t y)  {
     if (!sf->cf) {
         jump(x, y);
     }
 
 } //pagalvot ar nereiks pakeist i jump not zero?
-void VirtualMachine::jumpBelow(const uint8_t x, const uint8_t y) const {
+void VirtualMachine::jumpBelow( uint8_t x,  uint8_t y)  {
     if(sf->cf){
         jump(x, y);
     }
 }
-void VirtualMachine::jumpAbove(const uint8_t x, const uint8_t y) const {
+void VirtualMachine::jumpAbove( uint8_t x,  uint8_t y)  {
     if(!sf->zf && !sf->cf){
         jump(x, y);
     }
 }
-void VirtualMachine::moveToAX(const uint8_t x, const uint8_t y) const {
+void VirtualMachine::moveToAX( uint8_t x,  uint8_t y)  {
     int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     *rax = realMachine->getWordFromMemory(realAddress);
 }
-void VirtualMachine::moveToBX(const uint8_t x, const uint8_t y) const {
+void VirtualMachine::moveToBX( uint8_t x,  uint8_t y)  {
+    cout << "ar veikia " << endl;
     int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
+    cout << "Real address" << realAddress << endl;
+    uint32_t test = realMachine->getWordFromMemory(realAddress);
+    cout << test << endl;
     *rbx = realMachine->getWordFromMemory(realAddress);
+    cout << "O cia?" << endl;
 }
-void VirtualMachine::saveFromAX(const uint8_t x, const uint8_t y) const { //patikrint
+void VirtualMachine::saveFromAX( uint8_t x,  uint8_t y)  { //patikrint
     int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     realMachine->saveWordToMemoryFromAx(realAddress);
 }
-void VirtualMachine::saveFromBX(const uint8_t x, const uint8_t y) const { //patikrint
+void VirtualMachine::saveFromBX( uint8_t x,  uint8_t y)  { //patikrint
     int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     realMachine->saveWordToMemoryFromBx(realAddress);
 }
-void VirtualMachine::execute(const uint8_t x) const {
+void VirtualMachine::execute( uint8_t x)  {
     //Paleidžiama nauja programa, kurios failo pavadinimas yra nurodomas RBX registre.
     //Yra galimybe paduoti bent vieną bloką duomenu programai kaip parametrą. Baitas x nurodo parametru˛ bloką.
     realMachine->changeSI(5);
 }
-void VirtualMachine::runNextCommand(const uint32_t cmd) const {
+
+uint8_t convertCharToRealHexValue(uint8_t value){
+    if(value >= 48 && value <= 57){
+        value -= 48;
+        return value;
+    }
+    if(value >= 65 && value <= 70){
+        value -= 65;
+        return value;
+    }
+    if(value >= 97 && value <= 102){
+        value -= 97;
+        return value;
+    }
+}
+
+void VirtualMachine::runNextCommand( uint32_t cmd) {
     /* implementuojant pacias funkcijas, uztikrinti, kad
      * jos rekursyviai viena kitos nekviestu
      * kad neatsitiktu stackoverflow.com :thumbs_up:
@@ -184,14 +205,19 @@ void VirtualMachine::runNextCommand(const uint32_t cmd) const {
             printNumber();
             return;
         case 0x50545854: // PTXT
+        cout << "alioo" << endl;
             printText();
+            cout << "alioo" << endl;
             return;
     }
 
     // 2 baitu opcodes (yra xy dalis)
     const uint16_t opcode = (cmd >> 16) & 0xFFFF; // & xFF(FF) bitmaskas pravalo prasiftintus bitus
-    const uint8_t x = (cmd >> 8) & 0xFF;
-    const uint8_t y = cmd & 0xFF;
+     uint8_t x = (cmd >> 8) & 0xFF;
+     uint8_t y = cmd & 0xFF;
+
+     x = convertCharToRealHexValue(x);
+     y = convertCharToRealHexValue(y);
 
     switch (opcode) {
         // Procesoriaus
@@ -244,6 +270,7 @@ void VirtualMachine::runNextCommand(const uint32_t cmd) const {
 
         default:
             realMachine->changePI(2); // neteisingas operacijos kodas
+            cout << "problem" << endl;
 
             /* Teoriskai cia neturetu nusigauti, nes pries tai su test() patikrinama
              * ar opcode yra validus, bet palieku cerr debugginimui */
@@ -252,18 +279,18 @@ void VirtualMachine::runNextCommand(const uint32_t cmd) const {
 }
 
 
-void VirtualMachine::readFromKeyboard() const {
+void VirtualMachine::readFromKeyboard()  {
     realMachine->changeSI(2);
 }
-void VirtualMachine::printNumber() const {
+void VirtualMachine::printNumber()  {
     realMachine->changeSI(3);
     //cia turetu pagal ideja nieko daugiau nereikt ir RBX registre bus tai ka spausdinam ar kaip
 }
-void VirtualMachine::printText() const {
+void VirtualMachine::printText()  {
     realMachine->changeSI(4);
     //cia turetu pagal ideja nieko daugiau nereikt ir RBX registre bus tai ka spausdinam ar kaip
 }
 
-void VirtualMachine::_halt() const{
+void VirtualMachine::_halt() {
     realMachine->changeSI(1);
 }

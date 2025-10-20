@@ -23,6 +23,8 @@ void Monitor::displayText(const uint32_t* src, uint32_t words){
 }
 
 void Monitor::display(const uint32_t* src, uint32_t words, bool isNumber){
+    
+    std::cout << "Okey monitor reik taisyt bet ok??" << std::endl;
     if(isNumber){
         displayNumber(src, words);
     }
