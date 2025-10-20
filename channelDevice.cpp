@@ -82,22 +82,6 @@ void ChannelDevice::xchg(){
     }
 }
 
-void printAsASCII1(uint32_t* memory, int size) {
-    uint8_t* bytes = (uint8_t*)memory;
-    int totalBytes = size * 4; // 4 bytes per uint32_t
-    
-    for (int i = 0; i < totalBytes; i++) {
-        if (bytes[i] >= 32 && bytes[i] <= 126) { // Printable ASCII
-            cout << (char)bytes[i];
-        } else if (bytes[i] == 10) { // Newline
-            cout << endl;
-        } else {
-            cout << '.'; // Non-printable characters
-        }
-    }
-    cout << endl;
-}
-
 void ChannelDevice::copyFromUserMemory(uint32_t* dest, uint32_t offset) {
     if (rnum + offset > userMemSize) {
         realMachine->changePI(1);
@@ -112,7 +96,7 @@ void ChannelDevice::copyFromSupervisorMemory(uint32_t* dest, uint32_t offset) {
     }
     memcpy(dest, supervisorMemory + offset, rnum*4);
     cout << "Supervisor memory: " << endl;
-    printAsASCII1(dest, rnum);
+    realMachine->printAsASCII(dest, rnum);
 }
 
 void ChannelDevice::copyFromExternalMemory(uint32_t* dest) {
@@ -178,7 +162,7 @@ void ChannelDevice::copyToUserMemory(uint32_t offset, const uint32_t* src) {
     }
     memcpy(userMemory + offset, src, rnum*4);
     cout << "User memory: " << endl;
-    printAsASCII1(userMemory + offset, rnum);
+    realMachine->printAsASCII(userMemory + offset, rnum);
 }
 
 

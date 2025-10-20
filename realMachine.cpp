@@ -25,7 +25,7 @@ void printAsHex(uint32_t *memory, int size) {
 }
 
 // Print as ASCII (interpreting bytes as characters)
-void printAsASCII(uint32_t *memory, int size) {
+void RealMachine::printAsASCII(uint32_t *memory, int size) {
     cout << "=== ASCII ===" << endl;
     uint8_t *bytes = (uint8_t *) memory;
     int totalBytes = size * 4; // 4 bytes per uint32_t
@@ -61,8 +61,8 @@ void RealMachine::testavimui() {
     // printAsASCII(supervisorMemory, 256);
     // printAsHex(supervisorMemory, 256);
     convertTextToProgram();
-    printAsASCII(supervisorMemory, 256);
-    printAsHex(supervisorMemory, 256);
+    // printAsASCII(supervisorMemory, 256);
+    // printAsHex(supervisorMemory, 256);
 
     allocateMemoryForVirtualMachine();
     //ptr dabar rodo i puslapiu lentele
@@ -93,30 +93,30 @@ void RealMachine::testavimui() {
 
     // printAsASCII(userMemory, 1632);
 
-    // int kazkas = 0;
-    // pc = 48;
-    // while (1) {
-    //     int i = pc / 16;
-    //     int j = pc % 16;
-    //
-    //     uint32_t command = userMemory[pageTable[i] * 16 + j];
-    //     cout << "0x" << std::hex << command << std::dec << endl;
-    //     reverseBytesInWord(command);
-    //     cout << "0x" << std::hex << command << std::dec << endl;
-    //     ++pc;
-    //     virtualMachine->runNextCommand(command);
-    //     cout << "Praejo komanda??" << endl;
-    //     if (test_() != 0) {
-    //         cout << "interupttas ye" << endl;
-    //         si = 0;
-    //         pi = 0;
-    //         break;
-    //     }
-    //     ++kazkas;
-    //     if (kazkas == 50) {
-    //         break;
-    //     }
-    // }
+    int kazkas = 0;
+    pc = 48;
+    while (1) {
+        int i = pc / 16;
+        int j = pc % 16;
+
+        uint32_t command = userMemory[pageTable[i] * 16 + j];
+        cout << "0x" << std::hex << command << std::dec << endl;
+        reverseBytesInWord(command);
+        cout << "0x" << std::hex << command << std::dec << endl;
+        ++pc;
+        virtualMachine->runNextCommand(command);
+        cout << "Praejo komanda??" << endl;
+        if (test_() != 0) {
+            cout << "interupttas ye" << endl;
+            si = 0;
+            pi = 0;
+            break;
+        }
+        ++kazkas;
+        if (kazkas == 50) {
+            break;
+        }
+    }
 }
 
 
@@ -385,17 +385,21 @@ void RealMachine::reverseBytesInWord(uint32_t &word) {
 
 void RealMachine::allocateMemoryForVirtualMachine() {
     int temp[17];
-    srand(time(0));
+    srand(time(nullptr));
     int randomIndex;
     for (int i = 0; i < 17; ++i) {
         //tikiuos dabar bus ok
         randomIndex = rand() % freeBlocks.size();
+        cout << "Random index: " << randomIndex << endl;
         uint32_t newPageNumber = freeBlocks.at(randomIndex);
         occupiedBlocks.push_back(newPageNumber);
         temp[i] = newPageNumber;
+
         freeBlocks[randomIndex] = freeBlocks.back();
         freeBlocks.pop_back();
     }
+
+    // sukuria puslapiu lentele
     ptr = temp[0];
     for (int i = 1; i < 17; ++i) {
         userMemory[ptr * 16 + i - 1] = temp[i];
