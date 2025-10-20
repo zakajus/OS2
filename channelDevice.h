@@ -43,7 +43,7 @@ public:
           monitor(monitor), keyboard(keyboard) {}
     ~ChannelDevice(){}
 
-    void setReg(uint32_t value) { rnum = value; }
+    void setReg(uint32_t value) { reg = value; }
     uint32_t getReg(){return reg;}
     void setSB(uint16_t value) { sb = value; }
     void setDB(uint16_t value) { db = value; }
@@ -62,16 +62,16 @@ public:
         dt = value; 
     }
 
-    void copyFromUserMemory(uint32_t* dest, uint32_t offset);
-    void copyFromSupervisorMemory(uint32_t* dest, uint32_t offset);
+    void copyFromUserMemory(uint32_t* dest, uint32_t offset);//patikrint
+    void copyFromSupervisorMemory(uint32_t* dest, uint32_t offset); //maybe veikia
     void copyFromExternalMemory(uint32_t* dest); //veikia
-    void copyFromInputStream(uint32_t* dest); //KVIECIANT NURODYT BAIT
-    void copyFromRbx(uint32_t* dest);
+    void copyFromInputStream(uint32_t* dest); //TAISYT
+    void copyFromRbx(uint32_t* dest);//patikrint
 
-    void copyToUserMemory(uint32_t offset, const uint32_t* src);
+    void copyToUserMemory(uint32_t offset, const uint32_t* src); //maybe gerai veikia
     void copyToSupervisorMemory(uint32_t offset, const uint32_t* src); //veikia
-    void copyToOutputStream(const uint32_t* src);
-    void copyToRbx(const uint32_t* src);
+    void copyToOutputStream(uint32_t* src); //TAISYT
+    void copyToRbx(const uint32_t* src); //veikia
     void xchg();
     
 };

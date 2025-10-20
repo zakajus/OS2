@@ -9,20 +9,13 @@ void Keyboard::getBytes(uint32_t* dest, uint32_t words){
     // Read entire input line
     std::string input;
     getline(std::cin, input);
-    std::cout << input << std::endl;
-    
-    // Calculate total bytes needed
+    //std::cout << input << std::endl;
     size_t totalBytes = words * sizeof(uint32_t);  // words * 4
-    
-    // Pad with zeros if too short
     while(input.length() < totalBytes){
         input += '\0';
     }
-    
-    std::cout << input.c_str() + 16 << std::endl;
-    
-    // Copy all bytes at once
-    memcpy(dest, input.c_str(), totalBytes);
+    //std::cout << input.c_str() << std::endl;
+    memcpy(dest, input.c_str(), totalBytes); 
 }
 
 // void Keyboard::getBytes(uint32_t* dest, uint32_t words){

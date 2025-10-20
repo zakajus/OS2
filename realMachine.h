@@ -51,6 +51,7 @@ public:
     void rm_run();
     int validateProgram();
     int convertTextToProgram();
+    void testas2();
 
     void allocateMemoryForVirtualMachine();
     void freeMemoryFromVirtualMachine();

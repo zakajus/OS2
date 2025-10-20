@@ -20,6 +20,8 @@ int main() {
     Keyboard keyboard;
     RealMachine realMachine(monitor, keyboard);
 
+
+    //realMachine.testas2();
     realMachine.testavimui();
     
 

@@ -39,6 +39,7 @@ void ChannelDevice::xchg(){
         
         case 5:{
             copyFromRbx(buffer.data());
+            cout << "Ar nukopijavo is rbx: " << buffer.data() << endl;
             break;
         }
             
@@ -186,16 +187,16 @@ void ChannelDevice::copyFromInputStream(uint32_t* dest) {
     keyboard->getBytes(dest, rnum);
 }
 
-void ChannelDevice::copyToOutputStream(const uint32_t* src) {
+void ChannelDevice::copyToOutputStream( uint32_t* src) {
     monitor->display(src, rnum, isNumber);
 }
 
 void ChannelDevice::copyFromRbx(uint32_t* dest){
+    rnum = 1;
     if (rnum > 1) {
         realMachine->changePI(3); 
         return;
-    }
-    
+    }   
     memcpy(dest, &reg, rnum*4);
 }
 
@@ -204,6 +205,5 @@ void ChannelDevice::copyToRbx(const uint32_t* src){
         realMachine->changePI(3); 
         return;
     }
-    
-    memcpy(&reg, src, rnum*4);
+     memcpy(&reg, src, rnum*4);
 }

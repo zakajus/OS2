@@ -130,13 +130,9 @@ void VirtualMachine::moveToAX( uint8_t x,  uint8_t y)  {
     *rax = realMachine->getWordFromMemory(realAddress);
 }
 void VirtualMachine::moveToBX( uint8_t x,  uint8_t y)  {
-    cout << "ar veikia " << endl;
     int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
-    cout << "Real address" << realAddress << endl;
     uint32_t test = realMachine->getWordFromMemory(realAddress);
-    cout << test << endl;
     *rbx = realMachine->getWordFromMemory(realAddress);
-    cout << "O cia?" << endl;
 }
 void VirtualMachine::saveFromAX( uint8_t x,  uint8_t y)  { //patikrint
     int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
@@ -205,9 +201,7 @@ void VirtualMachine::runNextCommand( uint32_t cmd) {
             printNumber();
             return;
         case 0x50545854: // PTXT
-        cout << "alioo" << endl;
-            printText();
-            cout << "alioo" << endl;
+            printText(); //sita taisyt, neisspausdinooo
             return;
     }
 
