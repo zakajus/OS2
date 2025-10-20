@@ -49,7 +49,7 @@ void printAsASCII(uint32_t* memory, int size) {
 void RealMachine::testavimui(){
     channelDevice->setST(3); //is isorines
     channelDevice->setDT(2); //i supervizorine
-    channelDevice->setNAME(0x315A5650); //pakeist i tikra pavadinima
+    channelDevice->setNAME(0x315A5650); //"1PVZ" - pakeist i tikra pavadinima
     channelDevice->setRNUM(256); //16
     channelDevice->setOFF(0);
     channelDevice->setDB(0);
@@ -252,6 +252,7 @@ int RealMachine::convertTextToProgram(){
         }
     }
     memcpy(supervisorMemory, newMemory, 256);
+    return 0;
 }
 
 int RealMachine::validateProgram() {
