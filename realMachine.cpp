@@ -91,32 +91,32 @@ void RealMachine::testavimui() {
 
     pi = 0;
 
-    printAsASCII(userMemory, 1632);
+    // printAsASCII(userMemory, 1632);
 
-    int kazkas = 0;
-    pc = 48;
-    while (1) {
-        int i = pc / 16;
-        int j = pc % 16;
-
-        uint32_t command = userMemory[pageTable[i] * 16 + j];
-        cout << "0x" << std::hex << command << std::dec << endl;
-        reverseBytesInWord(command);
-        cout << "0x" << std::hex << command << std::dec << endl;
-        ++pc;
-        virtualMachine->runNextCommand(command);
-        cout << "Praejo komanda??" << endl;
-        if (test_() != 0) {
-            cout << "interupttas ye" << endl;
-            si = 0;
-            pi = 0;
-            break;
-        }
-        ++kazkas;
-        if (kazkas == 50) {
-            break;
-        }
-    }
+    // int kazkas = 0;
+    // pc = 48;
+    // while (1) {
+    //     int i = pc / 16;
+    //     int j = pc % 16;
+    //
+    //     uint32_t command = userMemory[pageTable[i] * 16 + j];
+    //     cout << "0x" << std::hex << command << std::dec << endl;
+    //     reverseBytesInWord(command);
+    //     cout << "0x" << std::hex << command << std::dec << endl;
+    //     ++pc;
+    //     virtualMachine->runNextCommand(command);
+    //     cout << "Praejo komanda??" << endl;
+    //     if (test_() != 0) {
+    //         cout << "interupttas ye" << endl;
+    //         si = 0;
+    //         pi = 0;
+    //         break;
+    //     }
+    //     ++kazkas;
+    //     if (kazkas == 50) {
+    //         break;
+    //     }
+    // }
 }
 
 
@@ -170,7 +170,7 @@ bool isValidInstruction(const char *word) {
     return false;
 }
 
-uint8_t convertCharToRealHexValue1(uint8_t value) {
+uint8_t RealMachine::convertCharToRealHexValue(uint8_t value) {
     if (value >= 48 && value <= 57) {
         value -= 48;
         return value;
@@ -183,6 +183,7 @@ uint8_t convertCharToRealHexValue1(uint8_t value) {
         value -= 97;
         return value;
     }
+    return 0; // TODO: ar nereikia cia kazkokios klaidos?
 }
 
 // TODO: PERSKAITYTI AR GERAI
@@ -202,18 +203,18 @@ int RealMachine::convertTextToProgram() {
             //word yra char, tai jei noriu skaiciaus reik pakeist
             //kazkodel sitas ne visada istrina bet pradinius visailaik tuos $x30 pvz pasalina
             //cout << word[2] << " " << word[3] << endl;
-            x = convertCharToRealHexValue1(word[2]);
-            y = convertCharToRealHexValue1(word[3]);
+            x = convertCharToRealHexValue(word[2]);
+            y = convertCharToRealHexValue(word[3]);
             continue;
         }
 
         //ideti i x ir y vieta komanda/skaiciu
         if (isValidHexDigit(word[0]) && isValidHexDigit(word[1]) && isValidHexDigit(word[2]) &&
             isValidHexDigit(word[3])) {
-            word[0] = convertCharToRealHexValue1(word[0]);
-            word[1] = convertCharToRealHexValue1(word[1]);
-            word[2] = convertCharToRealHexValue1(word[2]);
-            word[3] = convertCharToRealHexValue1(word[3]);
+            word[0] = convertCharToRealHexValue(word[0]);
+            word[1] = convertCharToRealHexValue(word[1]);
+            word[2] = convertCharToRealHexValue(word[2]);
+            word[3] = convertCharToRealHexValue(word[3]);
 
             uint32_t value = (static_cast<uint32_t>(word[0]) << 24) |
                              (static_cast<uint32_t>(word[1]) << 16) |

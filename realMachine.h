@@ -49,6 +49,7 @@ public:
     void changePI(uint8_t i);
 
     static void reverseBytesInWord(uint32_t &word);
+    static uint8_t convertCharToRealHexValue(uint8_t value);
 
     void rm_run();
     int validateProgram();
