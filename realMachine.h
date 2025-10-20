@@ -48,6 +48,8 @@ public:
     void changeSI(uint8_t i);
     void changePI(uint8_t i);
 
+    static void reverseBytesInWord(uint32_t &word);
+
     void rm_run();
     int validateProgram();
     int convertTextToProgram();
