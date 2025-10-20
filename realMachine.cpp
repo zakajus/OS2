@@ -60,8 +60,8 @@ void RealMachine::testavimui(){
     // printAsASCII(supervisorMemory, 256);
     // printAsHex(supervisorMemory, 256);
     convertTextToProgram();
-    // printAsASCII(supervisorMemory, 256);
-    // printAsHex(supervisorMemory, 256);
+    printAsASCII(supervisorMemory, 256);
+    printAsHex(supervisorMemory, 256);
 
     allocateMemoryForVirtualMachine();
     //ptr dabar rodo i puslapiu lentele
@@ -99,7 +99,7 @@ void RealMachine::testavimui(){
         
         uint32_t command = userMemory[pageTable[i]*16+j];
         cout << "0x" << std::hex << command << std::dec << endl;
-        command = ((command & 0x000000FF) << 24) |  // Byte 0 -> Byte 3
+        command = ((command & 0x000000FF) << 24) |  // Byte 0 -> Byte 3  TODO: PADARYTI I FUNKCIJA
           ((command & 0x0000FF00) << 8)  |  // Byte 1 -> Byte 2
           ((command & 0x00FF0000) >> 8)  |  // Byte 2 -> Byte 1
           ((command & 0xFF000000) >> 24);
@@ -189,6 +189,7 @@ uint8_t convertCharToRealHexValue1(uint8_t value){
     }
 }
 
+// TODO: PERSKAITYTI AR GERAI
 int RealMachine::convertTextToProgram(){
     uint32_t newMemory[256] = {0};
     uint32_t firstWord = supervisorMemory[0];
@@ -281,6 +282,7 @@ void RealMachine::rm_run(){
     channelDevice->setDB(0);
     channelDevice->setSB(0);
     channelDevice->xchg();
+
     //ivykdyt validacija
     if(validateProgram() != 0){
         return;

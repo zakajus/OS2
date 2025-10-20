@@ -183,6 +183,7 @@ void ChannelDevice::copyToUserMemory(uint32_t offset, const uint32_t* src) {
 
 
 //KVIECIANT NURODYT BAITUS BBZ KODEL NEVEIKIA
+//GALLL nuskaito atvirkstiai TODO: sutvarkyti?
 void ChannelDevice::copyFromInputStream(uint32_t* dest) {    
     keyboard->getBytes(dest, rnum);
 }
