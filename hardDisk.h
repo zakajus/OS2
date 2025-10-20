@@ -12,29 +12,24 @@ using namespace std;
 class HardDisk {
 private:
     uint32_t memory[HDD_SIZE]{};
-    static string fileName;
-    filesystem::file_time_type lastModificationTime;
 
 public:
     HardDisk();
-    explicit HardDisk(const string &fileName);
+    // explicit HardDisk(const string &fileName);
 
     ~HardDisk();
 
     /* Nuskaito visa faila tik jei jis buvo pakeistas, tai galima kviesti daznai
      * cia aktualu, kad nereiketu perkrauti OS pakeitus hdd.txt */
-    void refreshMemory();
+    // void refreshMemory();
 
-    static filesystem::file_time_type getFileModificationTime() ;
+    // static filesystem::file_time_type getFileModificationTime() ;
 
     // Iskvietimas gali atnaujinti lastModificationTime, tai jei reikia keliems palyginimams, reiksme issaugoti i kintamaji
-    bool fileWasModified();
+    //bool fileWasModified();
 
     uint32_t* getMemoryPointer();
 
-    uint32_t getWord(int number) const; // TODO: implement
-    
-    vector<uint8_t> readBlock(const int fromWord, const int wordCount) const; // TODO: implement 16 zodziu po 4 baitus
 
 };
 

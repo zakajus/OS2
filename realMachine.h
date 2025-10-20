@@ -5,6 +5,7 @@
 #include <ctime>
 #include <vector>
 #include <cstdint>
+#include <iomanip>
 
 #include "keyboard.h"
 #include "monitor.h"
@@ -37,18 +38,23 @@ private:
     vector<int> occupiedBlocks;
 
 public:
-    RealMachine(Monitor &monitor, Keyboard &keyboard, HardDisk& hardDisk);
+    RealMachine(Monitor &monitor, Keyboard &keyboard);
 
-    int translateLocalAdressToRealAddress(uint8_t x, uint8_t y);
+    uint32_t translateLocalAdressToRealAddress(uint8_t x, uint8_t y);
     void printAllRegisterValues();
     void printCurrentPage(int x);
     void printVirtualMemory();
     void printRealMemory();
-    void changeSI(int i);
-    void changePI(int i);
+    void changeSI(uint8_t i);
+    void changePI(uint8_t i);
+
+    static void reverseBytesInWord(uint32_t &word);
+    static uint8_t convertCharToRealHexValue(uint8_t value);
 
     void rm_run();
     int validateProgram();
+    int convertTextToProgram();
+    void testas2();
 
     void allocateMemoryForVirtualMachine();
     void freeMemoryFromVirtualMachine();
@@ -60,6 +66,8 @@ public:
     void saveWordToMemoryFromAx(int number);
 
     void saveWordToMemoryFromBx(int number);
+
+    void testavimui();
 
     int test_();
 };
