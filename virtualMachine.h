@@ -40,6 +40,7 @@ struct StatusFlag{
     unsigned int of : 1; //overflow flag
     unsigned int af : 1; //auxiliary flag
     unsigned int zf : 1; //zero flag
+    //loginimo flagas arba klassee
 };
 
 class VirtualMachine
@@ -52,32 +53,33 @@ class VirtualMachine
         uint16_t* pc;
         StatusFlag* sf;
         RealMachine* realMachine;
+        uint32_t memory[256];
     public:
         VirtualMachine(uint32_t &rax, uint32_t &rbx,  uint16_t &ds, uint16_t &cs, uint16_t &pc, StatusFlag &sf, RealMachine &realMachine);
 
-        void add(uint8_t x, uint8_t y) const;
-        void substract(uint8_t x, uint8_t y) const;
-        void multiply(uint8_t x, uint8_t y) const;
-        void divide(uint8_t x, uint8_t y) const;
-        void compare() const;
-        void and_() const;
-        void or_() const;
-        void not_() const;
-        void jump(uint8_t x, uint8_t y) const;
-        void jumpZero(uint8_t x, uint8_t y) const;
-        void jumpNotCarry(uint8_t x, uint8_t y) const; //pagalvot ar nereiks pakeist i jump not zero?
-        void jumpBelow(uint8_t x, uint8_t y) const;
-        void jumpAbove(uint8_t x, uint8_t y) const;
-        void moveToAX(uint8_t x, uint8_t y) const;
-        void moveToBX(uint8_t x, uint8_t y) const;
-        void saveFromAX(uint8_t x, uint8_t y) const ;
-        void saveFromBX(uint8_t x, uint8_t y) const;
-        void execute(uint8_t x) const;
-        void runNextCommand(uint32_t) const;
-        void readFromKeyboard() const;
-        void printNumber() const;
-        void printText() const;
-        void _halt() const;
+        void add(uint8_t x, uint8_t y) ;
+        void substract(uint8_t x, uint8_t y) ;
+        void multiply(uint8_t x, uint8_t y) ;
+        void divide(uint8_t x, uint8_t y) ;
+        void compare() ;
+        void and_() ;
+        void or_() ;
+        void not_() ;
+        void jump(uint8_t x, uint8_t y) ;
+        void jumpZero(uint8_t x, uint8_t y) ;
+        void jumpNotCarry(uint8_t x, uint8_t y) ; //pagalvot ar nereiks pakeist i jump not zero?
+        void jumpBelow(uint8_t x, uint8_t y) ;
+        void jumpAbove(uint8_t x, uint8_t y) ;
+        void moveToAX(uint8_t x, uint8_t y) ;
+        void moveToBX(uint8_t x, uint8_t y) ;
+        void saveFromAX(uint8_t x, uint8_t y)  ;
+        void saveFromBX(uint8_t x, uint8_t y) ;
+        void execute(uint8_t x) ;
+        void runNextCommand(uint32_t);
+        void readFromKeyboard() ;
+        void printNumber() ;
+        void printText() ;
+        void _halt() ;
 
 };
 

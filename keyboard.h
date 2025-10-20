@@ -4,13 +4,14 @@
 #include <iostream>
 #include <cstdint>
 #include <vector>
+#include <cstring>
 
 class Keyboard {
 private:
 	std::vector<char> keysBuffer;
 public:
 	uint8_t getKey();
-	void getBytes(uint8_t* dest, uint32_t rnum);
+	void getBytes(uint32_t* dest, uint32_t words);
 };
 
 #endif

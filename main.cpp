@@ -4,6 +4,7 @@ using namespace std;
 #include "realMachine.h"
 #include "monitor.h"
 #include "keyboard.h"
+//#include "hardDisk.h"
 
 
 int main() {
@@ -19,34 +20,45 @@ int main() {
     Keyboard keyboard;
     RealMachine realMachine(monitor, keyboard);
 
-    int choice = 0;
-    cout << "Choose mode: (1) - run everything at once; (2) - stepping mode" << endl;
-    cin >> choice;
 
-    if(choice = 1){
+    //realMachine.testas2();
+    realMachine.testavimui();
+    
 
-    }
-    if(choice = 2){
-        cout << "Press space to make a step. Press q to exit." << endl;
-        while(1){
-            char key;
-            cin.get(key);
-        
-            if(key == ' '){
-                realMachine.nextStep();
-            }
-            else if(key == 'q' || key == 'Q'){
-                break;
-            }
-        }
-        
-    }
+    // int choice = 0;
+    // cout << "Choose mode: (1) - run everything at once; (2) - stepping mode" << endl;
+    // cin >> choice;
 
-    while(1){
+    // if(choice = 1){
+    //     realMachine.rm_run();
+    // }
+    // if(choice = 2){
+    //     cout << "Press space to make a step. Press q to exit." << endl;
+    //     while(1){
+    //         char key;
+    //         cin.get(key);
         
-        realMachine.test_();
-        break;
-    }
+    //         if(key == ' '){
+    //             realMachine.nextStep();
+    //         }
+    //         else if(key == 'q' || key == 'Q'){
+    //             break;
+    //         }
+    //     }
+        
+    // }
+
+    // while(1){
+        
+    //     int x = realMachine.test_();
+    //     if(x == -1){
+    //         break;
+    //     }
+    //     if (x == 1){
+    //         break; //arba paleist kita programa uzkrovus
+    //     }
+    //     break;
+    // }
 
     return 0;
 }

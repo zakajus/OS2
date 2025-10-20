@@ -5,6 +5,7 @@
 #include <ctime>
 #include <vector>
 #include <cstdint>
+#include <iomanip>
 
 #include "keyboard.h"
 #include "monitor.h"
@@ -39,22 +40,24 @@ private:
 public:
     RealMachine(Monitor &monitor, Keyboard &keyboard);
 
-    int translateLocalAdrressToRealAddress(uint8_t x, uint8_t y);
-
+    uint32_t translateLocalAdressToRealAddress(uint8_t x, uint8_t y);
     void printAllRegisterValues();
-
-    void printCurrentPage();
-
+    void printCurrentPage(int x);
     void printVirtualMemory();
-
     void printRealMemory();
+    void changeSI(uint8_t i);
+    void changePI(uint8_t i);
 
-    void changeSI(int i);
+    static void reverseBytesInWord(uint32_t &word);
+    static uint8_t convertCharToRealHexValue(uint8_t value);
 
-    void changePI(int i);
-
+    void rm_run();
+    int validateProgram();
+    int convertTextToProgram();
+    void testas2();
 
     void allocateMemoryForVirtualMachine();
+    void freeMemoryFromVirtualMachine();
 
     uint32_t getWordFromMemory(int number);
 
@@ -64,7 +67,9 @@ public:
 
     void saveWordToMemoryFromBx(int number);
 
-    void test_();
+    void testavimui();
+
+    int test_();
 };
 
 #endif
