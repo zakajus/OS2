@@ -277,11 +277,9 @@ void VirtualMachine::readFromKeyboard()  {
 }
 void VirtualMachine::printNumber()  {
     realMachine->changeSI(3);
-    //cia turetu pagal ideja nieko daugiau nereikt ir RBX registre bus tai ka spausdinam ar kaip
 }
 void VirtualMachine::printText()  {
     realMachine->changeSI(4);
-    //cia turetu pagal ideja nieko daugiau nereikt ir RBX registre bus tai ka spausdinam ar kaip
 }
 
 void VirtualMachine::_halt() {
