@@ -39,7 +39,6 @@ void ChannelDevice::xchg(){
         
         case 5:{
             copyFromRbx(buffer.data());
-            cout << "Ar nukopijavo is rbx: " << buffer.data() << endl;
             break;
         }
             
@@ -108,11 +107,8 @@ void ChannelDevice::copyFromUserMemory(uint32_t* dest, uint32_t offset) {
 void ChannelDevice::copyFromSupervisorMemory(uint32_t* dest, uint32_t offset) {
     if (rnum + offset > supervisorMemSize) {
         realMachine->changePI(1);
-        cout << "Supervizorinej meta PI" << endl;
     }
     memcpy(dest, supervisorMemory + offset, rnum*4);
-    cout << "Supervisor memory: " << endl;
-    printAsASCII1(dest, rnum);
 }
 
 void ChannelDevice::copyFromExternalMemory(uint32_t* dest) {
@@ -174,16 +170,11 @@ void ChannelDevice::copyToSupervisorMemory(uint32_t offset, const uint32_t* src)
 void ChannelDevice::copyToUserMemory(uint32_t offset, const uint32_t* src) {
     if (offset + rnum > userMemSize) {
         realMachine->changePI(1);
-        cout << "Userio meta Pi"  << endl;
     }
     memcpy(userMemory + offset, src, rnum*4);
-    cout << "User memory: " << endl;
-    printAsASCII1(userMemory + offset, rnum);
+    //printAsASCII1(userMemory + offset, rnum);
 }
 
-
-//KVIECIANT NURODYT BAITUS BBZ KODEL NEVEIKIA
-//GALLL nuskaito atvirkstiai TODO: sutvarkyti?
 void ChannelDevice::copyFromInputStream(uint32_t* dest) {    
     keyboard->getBytes(dest, rnum);
 }
@@ -198,6 +189,7 @@ void ChannelDevice::copyFromRbx(uint32_t* dest){
         realMachine->changePI(3); 
         return;
     }   
+    
     memcpy(dest, &reg, rnum*4);
 }
 

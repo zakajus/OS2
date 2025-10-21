@@ -46,6 +46,76 @@ void printAsASCII(uint32_t* memory, int size) {
     cout << endl;
 }
 
+void RealMachine::testas2(){
+    channelDevice->setST(3); //is isorines
+    channelDevice->setDT(2); //i supervizorine
+    channelDevice->setNAME(0x315A5650); //pakeist i tikra pavadinima
+    channelDevice->setRNUM(256); //16
+    channelDevice->setOFF(0);
+    channelDevice->setDB(0);
+    channelDevice->setSB(0);
+    channelDevice->xchg();
+
+    //printAsHex(supervisorMemory, 256);
+    //printAsASCII(supervisorMemory, 256);
+
+    convertTextToProgram();
+
+    //printAsASCII(supervisorMemory, 256);
+    //printAsHex(supervisorMemory, 256);
+
+     allocateMemoryForVirtualMachine();
+    //ptr dabar rodo i puslapiu lentele
+    channelDevice->setST(2); //is supervizorines
+    channelDevice->setDT(1); //i vartotojo
+    channelDevice->setRNUM(16);
+
+    virtualMachine = new VirtualMachine(rax, rbx, ds, cs, pc, sf, *this);
+    uint32_t pageTable[16];
+    
+    for(int i = 0; i < 16; i++){
+        pageTable[i] = userMemory[ptr * 16 + i];
+    }
+
+
+    for(int i = 0; i < 16; ++i){ //cia galimai reiks pakeist kad nebekopijuotu ten kkur nieko nebera
+        channelDevice->setSB(i); //is kurio takelio kopijuojam
+        channelDevice->setDB(pageTable[i]); //i kuri takeli kopijuojam
+        channelDevice->xchg();
+    }
+
+    if(test_() != 0){
+        cout << "interupttas po perkopijavmo" << endl;
+    }
+    pi = 0;
+    
+    printAsASCII(userMemory, 1632);
+    pc = 48;
+    while(1){
+        int i = pc / 16;
+        int j = pc % 16;
+        
+        uint32_t command = userMemory[pageTable[i]*16+j];
+        command = ((command & 0x000000FF) << 24) |  // Byte 0 -> Byte 3
+          ((command & 0x0000FF00) << 8)  |  // Byte 1 -> Byte 2
+          ((command & 0x00FF0000) >> 8)  |  // Byte 2 -> Byte 1
+          ((command & 0xFF000000) >> 24);
+        //cout << "0x" << std::hex << command << std::dec << endl;
+        //cout << "Program counter: " << "0x" << std::hex << pc << std::dec << endl;
+        ++pc;
+        virtualMachine->runNextCommand(command);
+        //printAllRegisterValues();
+        //next - taisyt ka irasom i rbx, nes cia buvo tekstas - rbx irgi reik atvaizduto kaip tekst
+        if(test_() != 0){
+            //cout << "interupttas ye" << endl;
+            si = 0;
+            pi = 0;
+            break;
+        }
+        si = 0;
+        pi = 0;
+    }
+}
 
 void RealMachine::testavimui(){
     channelDevice->setST(3); //is isorines
@@ -103,23 +173,18 @@ void RealMachine::testavimui(){
           ((command & 0x0000FF00) << 8)  |  // Byte 1 -> Byte 2
           ((command & 0x00FF0000) >> 8)  |  // Byte 2 -> Byte 1
           ((command & 0xFF000000) >> 24);
-        cout << "0x" << std::hex << command << std::dec << endl;
-        cout << "Program counter: " << "0x" << std::hex << pc << std::dec << endl;
+        //cout << "0x" << std::hex << command << std::dec << endl;
+        //cout << "Program counter: " << "0x" << std::hex << pc << std::dec << endl;
         ++pc;
         virtualMachine->runNextCommand(command);
-        printAllRegisterValues();
+        //printAllRegisterValues();
         //next - taisyt ka irasom i rbx, nes cia buvo tekstas - rbx irgi reik atvaizduto kaip tekst
         if(test_() != 0){
-            cout << "interupttas ye" << endl;
+            //cout << "interupttas ye" << endl;
             si = 0;
             pi = 0;
             break;
         }
-        ++kazkas;
-        if(kazkas == 50){
-            break;
-        }
-        
     }
     
 }
@@ -146,9 +211,8 @@ bool isValidInstruction(const char* word) {
     
     const char* twoParamOps[] = {
         "JP", "JZ", "JN", "JB", "JA", 
-        "MA", "MB", "SA", "SB",
-        "SU", "MU", "DI"
-    };
+        "MA", "MB", "SA", "SB", "AD",
+        "SU", "MU", "DI"};
     
     for (const char* op : twoParamOps) {
         if (word[0] == op[0] && word[1] == op[1] && 
@@ -194,7 +258,7 @@ uint8_t convertCharToRealHexValue1(uint8_t value){
 int RealMachine::convertTextToProgram(){
     uint32_t newMemory[256] = {0};
     uint32_t firstWord = supervisorMemory[0];
-    uint8_t x, y;
+    uint8_t x = 0, y = 0;
     int isValidProgram = 0;
     
     if (memcmp(&firstWord, "$AMJ", 4) != 0) {
@@ -212,7 +276,10 @@ int RealMachine::convertTextToProgram(){
         }
 
         //ideti i x ir y vieta komanda/skaiciu
-        if(isValidHexDigit(word[0]) && isValidHexDigit(word[1]) && isValidHexDigit(word[2]) && isValidHexDigit(word[3])){
+        if(isValidInstruction(wordTocheckInstruction)){
+            newMemory[x*16 + y] = instruction;
+        }
+        else if(isValidHexDigit(word[0]) && isValidHexDigit(word[1]) && isValidHexDigit(word[2]) && isValidHexDigit(word[3])){
             word[0] = convertCharToRealHexValue1(word[0]);
             word[1] = convertCharToRealHexValue1(word[1]);
             word[2] = convertCharToRealHexValue1(word[2]);
@@ -223,9 +290,7 @@ int RealMachine::convertTextToProgram(){
             newMemory[x*16 + y] = value;
             
         }
-        else if(isValidInstruction(wordTocheckInstruction)){
-            newMemory[x*16 + y] = instruction;
-        }
+        
         else if(word[0] == '!' && word[1] == '!' && word[2] == '!' && word[3] == '!'){
             break;
         }
@@ -241,12 +306,12 @@ int RealMachine::convertTextToProgram(){
             }
         }
         ++y;
-        if(y > 16){
+        if(y == 16){
             y = 0; 
             ++x;
         }
     }
-    memcpy(supervisorMemory, newMemory, 256);
+    memcpy(supervisorMemory, newMemory, 256 * sizeof(uint32_t));
     return 0;
 }
 
@@ -376,12 +441,10 @@ void RealMachine::printRealMemory(){
 
 void RealMachine::changeSI(uint8_t i){
     si = i;
-    cout << "Jei cia tai pi pasikeite i " << i << endl;
 }
 
 void RealMachine::changePI(uint8_t i){
     pi = i;
-    cout << "Jei cia tai pi pasikeite i " << i << endl;
 }
 
 
@@ -449,6 +512,7 @@ int RealMachine::test_(){
                 channelDevice->setRNUM(1);
                 channelDevice->xchg();
                 rbx = channelDevice->getReg();
+                si = 0;
                 break;
             }
                 
@@ -460,6 +524,7 @@ int RealMachine::test_(){
                 channelDevice->setRNUM(1);
                 channelDevice->setIsNumber(1);
                 channelDevice->xchg();
+                si = 0;
                 break;
             }
                 
@@ -471,6 +536,7 @@ int RealMachine::test_(){
                 channelDevice->setRNUM(1);
                 channelDevice->setIsNumber(0);
                 channelDevice->xchg();
+                si = 0;
                 break;;
             }
                 
@@ -479,6 +545,7 @@ int RealMachine::test_(){
                 //rbx failo pavadinimas
                 //x - parametru blokas
                 //paleidziam nauja programa
+                si = 0;
                 break;
             }
                 
