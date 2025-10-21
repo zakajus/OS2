@@ -3,9 +3,9 @@
 using namespace std;
 
 void Monitor::displayNumber( uint32_t* src, uint32_t words){
-    for(uint32_t i = 0; i < words; i++){
+    for (uint32_t i = 0; i < words; i++) {
         uint32_t word = src[i];
-        printf("0x%08X\n", word);
+        printf("%u\n", word);
     }
 }
 

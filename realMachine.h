@@ -42,22 +42,19 @@ public:
 
     uint32_t translateLocalAdressToRealAddress(uint8_t x, uint8_t y);
     void printAllRegisterValues();
-    void printCurrentPage(int x);
+    void printCurrentPage();
     void printVirtualMemory();
     void printRealMemory();
     void changeSI(uint8_t i);
     void changePI(uint8_t i);
 
-    static void reverseBytesInWord(uint32_t &word);
-    static uint8_t convertCharToRealHexValue(uint8_t value);
-
     void rm_run();
     int validateProgram();
     int convertTextToProgram();
-    void testas2();
 
     void allocateMemoryForVirtualMachine();
     void freeMemoryFromVirtualMachine();
+    void testas2();
 
     uint32_t getWordFromMemory(int number);
 
