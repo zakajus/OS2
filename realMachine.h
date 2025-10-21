@@ -52,6 +52,9 @@ public:
     int validateProgram();
     int convertTextToProgram();
 
+    static void reverseBytesInWord(uint32_t &word);
+    static uint8_t convertCharToRealHexValue(uint8_t value);
+
     void allocateMemoryForVirtualMachine();
     void freeMemoryFromVirtualMachine();
     void testas2();
