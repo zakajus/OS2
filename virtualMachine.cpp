@@ -163,7 +163,7 @@ void VirtualMachine::saveFromBX(uint8_t x, uint8_t y) {
     realMachine->saveWordToMemoryFromBx(realAddress);
 }
 
-void VirtualMachine::execute(uint8_t x) {
+void VirtualMachine::execute(uint8_t x) { // TODO: implement
     //Paleidžiama nauja programa, kurios failo pavadinimas yra nurodomas RBX registre.
     //Yra galimybe paduoti bent vieną bloką duomenu programai kaip parametrą. Baitas x nurodo parametru˛ bloką.
     realMachine->changeSI(5);
