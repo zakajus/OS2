@@ -117,6 +117,28 @@ void RealMachine::testavimui(){
     
 }
 
+void RealMachine::reverseBytesInWord(uint32_t &word) {
+    word = (word & 0x000000FF) << 24 | // Byte 0 -> Byte 3
+        (word & 0x0000FF00) << 8 | // Byte 1 -> Byte 2
+        (word & 0x00FF0000) >> 8 | // Byte 2 -> Byte 1
+        (word & 0xFF000000) >> 24; // Byte 3 -> Byte 0
+}
+
+uint8_t RealMachine::convertCharToRealHexValue(uint8_t value) {
+    if (value >= 48 && value <= 57) {
+        value -= 48;
+        return value;
+    }
+    if (value >= 65 && value <= 70) {
+        value -= 65;
+        return value;
+    }
+    if (value >= 97 && value <= 102) {
+        value -= 97;
+        return value;
+    }
+    return 0; // TODO: ar nereikia cia kazkokios klaidos?
+}
 
 
 bool isValidHexDigit(char c) {
