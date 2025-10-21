@@ -26,7 +26,7 @@ void printAsHex(uint32_t* memory, int size) {
 }
 
 // Print as ASCII (interpreting bytes as characters)
-void printAsASCII(uint32_t* memory, int size) {
+void RealMachine::printAsASCII(uint32_t *memory, int size) {
     cout << "=== ASCII ===" << endl;
     uint8_t* bytes = (uint8_t*)memory;
     int totalBytes = size * 4; // 4 bytes per uint32_t
@@ -185,6 +185,7 @@ void RealMachine::testavimui(){
             pi = 0;
             break;
         }
+        si = 0;
     }
     
 }
@@ -450,16 +451,20 @@ void RealMachine::changePI(uint8_t i){
 
 void RealMachine::allocateMemoryForVirtualMachine(){
     int temp[17];
-    srand(time(0));
+    srand(time(nullptr));
     int randomIndex;
     for(int i = 0; i < 17; ++i){ //tikiuos dabar bus ok
         randomIndex = rand() % freeBlocks.size();
+        cout << "Random index: " << randomIndex << endl;
         uint32_t newPageNumber = freeBlocks.at(randomIndex);
         occupiedBlocks.push_back(newPageNumber);
         temp[i] = newPageNumber;
+
         freeBlocks[randomIndex] = freeBlocks.back();
         freeBlocks.pop_back();
     }
+
+    // sukuria puslapiu lentele
     ptr = temp[0];
     for(int i = 1; i < 17; ++i){
         userMemory[ptr*16 + i-1] = temp[i];
