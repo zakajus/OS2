@@ -2,8 +2,6 @@
 #include "realMachine.h"
 #include "keyboard.h"
 #include "monitor.h"
-//#include "hardDisk.h"
-
 using namespace std;
 
 void ChannelDevice::xchg(){
@@ -14,70 +12,52 @@ void ChannelDevice::xchg(){
     std::vector<uint32_t> buffer(rnum);
     switch (st) {
         case 1: {
-             // User memory
             copyFromUserMemory(buffer.data(), sb * BLOCK_SIZE + off);
             break;
         }
-       
         case 2: {
-            // Supervisor memory
             copyFromSupervisorMemory(buffer.data(), sb * BLOCK_SIZE + off);
             break;
         }
-        
         case 3:{
-            // External memory
             copyFromExternalMemory(buffer.data());
             break;
-        }
-         
+        }   
         case 4: {
-            // Input stream
             copyFromInputStream(buffer.data());
             break;
         }
-        
         case 5:{
             copyFromRbx(buffer.data());
             break;
         }
-            
         default:{
             realMachine->changePI(3);
             break;
         }
             
     }
-
-    // Step 2: Write to destination based on DT
     switch (dt) {
-        case 1: {// User memory
+        case 1: {
             copyToUserMemory(db * BLOCK_SIZE + off, buffer.data());
             break;
         }
-            
         case 2: {
-            // Supervisor memory
             copyToSupervisorMemory(db * BLOCK_SIZE + off, buffer.data());
             break;
-        }
-            
+        }    
         case 3: {
-            // Output stream
             copyToOutputStream(buffer.data());
             break;
-        }
-        
+        } 
         case 4:{
             copyToRbx(buffer.data());
             break;
         }
-            
         default:{
             realMachine->changePI(3);
             break;
-        }
-            
+        }   
     }
 }
 
