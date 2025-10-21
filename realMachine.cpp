@@ -20,103 +20,30 @@ void printAsHex(uint32_t* memory, int size) {
     cout << "=== HEXADECIMAL ===" << endl;
     for (int i = 0; i < size; i++) {
         cout << "0x" << hex << setw(8) << setfill('0') << memory[i] << " ";
-        if ((i + 1) % 4 == 0) cout << endl; // 4 words per line
+        if ((i + 1) % 4 == 0) cout << endl; 
     }
-    cout << dec << endl; // Reset to decimal
+    cout << dec << endl; 
 }
 
-// Print as ASCII (interpreting bytes as characters)
 void RealMachine::printAsASCII(uint32_t *memory, int size) {
     cout << "=== ASCII ===" << endl;
     uint8_t* bytes = (uint8_t*)memory;
-    int totalBytes = size * 4; // 4 bytes per uint32_t
+    int totalBytes = size * 4; 
     
     for (int i = 0; i < totalBytes; i++) {
         if(i % 64 == 0){
             cout << endl  << i / 64 << " ";
         }
-        if (bytes[i] >= 32 && bytes[i] <= 126) { // Printable ASCII
+        if (bytes[i] >= 32 && bytes[i] <= 126) { 
             cout << (char)bytes[i];
-        } else if (bytes[i] == 10) { // Newline
+        } else if (bytes[i] == 10) { 
             cout << endl;
         } else {
-            cout << '.'; // Non-printable characters
+            cout << '.'; 
         }
     }
     cout << endl;
 }
-
-void RealMachine::testas2(){
-    channelDevice->setST(3); //is isorines
-    channelDevice->setDT(2); //i supervizorine
-    channelDevice->setNAME(0x315A5650); //pakeist i tikra pavadinima
-    channelDevice->setRNUM(256); //16
-    channelDevice->setOFF(0);
-    channelDevice->setDB(0);
-    channelDevice->setSB(0);
-    channelDevice->xchg();
-
-    //printAsHex(supervisorMemory, 256);
-    //printAsASCII(supervisorMemory, 256);
-
-    convertTextToProgram();
-
-    //printAsASCII(supervisorMemory, 256);
-    //printAsHex(supervisorMemory, 256);
-
-     allocateMemoryForVirtualMachine();
-    //ptr dabar rodo i puslapiu lentele
-    channelDevice->setST(2); //is supervizorines
-    channelDevice->setDT(1); //i vartotojo
-    channelDevice->setRNUM(16);
-
-    virtualMachine = new VirtualMachine(rax, rbx, ds, cs, pc, sf, *this);
-    uint32_t pageTable[16];
-    
-    for(int i = 0; i < 16; i++){
-        pageTable[i] = userMemory[ptr * 16 + i];
-    }
-
-
-    for(int i = 0; i < 16; ++i){ //cia galimai reiks pakeist kad nebekopijuotu ten kkur nieko nebera
-        channelDevice->setSB(i); //is kurio takelio kopijuojam
-        channelDevice->setDB(pageTable[i]); //i kuri takeli kopijuojam
-        channelDevice->xchg();
-    }
-
-    if(test_() != 0){
-        cout << "interupttas po perkopijavmo" << endl;
-    }
-    pi = 0;
-    
-    printAsASCII(userMemory, 1632);
-    pc = 48;
-    while(1){
-        int i = pc / 16;
-        int j = pc % 16;
-        
-        uint32_t command = userMemory[pageTable[i]*16+j];
-        command = ((command & 0x000000FF) << 24) |  // Byte 0 -> Byte 3
-          ((command & 0x0000FF00) << 8)  |  // Byte 1 -> Byte 2
-          ((command & 0x00FF0000) >> 8)  |  // Byte 2 -> Byte 1
-          ((command & 0xFF000000) >> 24);
-        //cout << "0x" << std::hex << command << std::dec << endl;
-        //cout << "Program counter: " << "0x" << std::hex << pc << std::dec << endl;
-        ++pc;
-        virtualMachine->runNextCommand(command);
-        //printAllRegisterValues();
-        //next - taisyt ka irasom i rbx, nes cia buvo tekstas - rbx irgi reik atvaizduto kaip tekst
-        if(test_() != 0){
-            //cout << "interupttas ye" << endl;
-            si = 0;
-            pi = 0;
-            break;
-        }
-        si = 0;
-        pi = 0;
-    }
-}
-
 void RealMachine::testavimui(){
     channelDevice->setST(3); //is isorines
     channelDevice->setDT(2); //i supervizorine
@@ -201,15 +128,6 @@ bool isValidInstruction(const char* word) {
         word[2] == '0' && word[3] == '0') {
         return true;
     }
-
-    // if(word[0] == '$' && word[1] == 'x' && isValidHexDigit(word[2]) && isValidHexDigit(word[3])){
-    //     return true;
-    // }
-
-    // if(isValidHexDigit(word[0]) && isValidHexDigit(word[1]) && isValidHexDigit(word[2]) && isValidHexDigit(word[3])){
-    //     return true;
-    // }
-    
     const char* twoParamOps[] = {
         "JP", "JZ", "JN", "JB", "JA", 
         "MA", "MB", "SA", "SB", "AD",
@@ -237,7 +155,6 @@ bool isValidInstruction(const char* word) {
             return true;
         }
     }
-    
     return false;
 }
 
@@ -318,24 +235,24 @@ int RealMachine::convertTextToProgram(){
 
 
 //Manau nereik, nes convertTextToProgram viska padaro
-int RealMachine::validateProgram() {
-    uint32_t firstWord = supervisorMemory[0];
+// int RealMachine::validateProgram() {
+//     uint32_t firstWord = supervisorMemory[0];
     
-    if (memcmp(&firstWord, "$AMJ", 4) != 0) {
-        return -1; 
-    }
+//     if (memcmp(&firstWord, "$AMJ", 4) != 0) {
+//         return -1; 
+//     }
     
-    for (int i = 1; i < 256; i++) { //pakeist ta 256 i kintamaji
-        uint32_t word = supervisorMemory[i];
-        char* instruction = (char*)&word;
+//     for (int i = 1; i < 256; i++) { //pakeist ta 256 i kintamaji
+//         uint32_t word = supervisorMemory[i];
+//         char* instruction = (char*)&word;
         
-        if (!isValidInstruction(instruction)) {
-            return i;
-        }
-    }
+//         if (!isValidInstruction(instruction)) {
+//             return i;
+//         }
+//     }
     
-    return 0; 
-}
+//     return 0; 
+// }
 
 void RealMachine::rm_run(){ // ar nereiktu kaip parametro paduot pavadinimo 
     channelDevice->setST(3); //is isorines
@@ -463,8 +380,6 @@ void RealMachine::allocateMemoryForVirtualMachine(){
         freeBlocks[randomIndex] = freeBlocks.back();
         freeBlocks.pop_back();
     }
-
-    // sukuria puslapiu lentele
     ptr = temp[0];
     for(int i = 1; i < 17; ++i){
         userMemory[ptr*16 + i-1] = temp[i];
@@ -487,11 +402,6 @@ void RealMachine::freeMemoryFromVirtualMachine(){
 
 uint32_t RealMachine::getWordFromMemory(int number){
     return userMemory[number];
-}
-
-uint32_t RealMachine::getNextWord(){
-    //implementuoooot ar tikrai riek
-    return 0;
 }
 
 void RealMachine::saveWordToMemoryFromAx(int number){ //sita paziuret ar gerai
@@ -559,27 +469,23 @@ int RealMachine::test_(){
         }
     }
     if(pi > 0){
-        switch (pi){ //galima arba ignoruot arba isjungt viska lauk ir pritnit viska kas ne taip
+        switch (pi){ 
             case 1:{
                 cout << "Address out of bounds." << endl;
                 return -1;
             }
-                
             case 2:{
                 cout << "Wrong operation code." << endl;
                 return -1;
             }
-                
             case 3:{
                 cout << "Wrong inicialization or assigment. " << endl;
                 return -1;
-            }
-                
+            }     
             case 4:{
                 cout << "Division from 0." << endl;
                 return -1;
             }
-                
             default:
                 break;
         }
@@ -588,6 +494,5 @@ int RealMachine::test_(){
     if(ti == 0){
         //change to other program
     }
-    //atstatyti registru reiksmes
     return 0;
 }
