@@ -67,6 +67,8 @@ public:
 
     void saveWordToMemoryFromBx(int number);
 
+    void printAsASCII(uint32_t *memory, int size);
+
     void testavimui();
 
     int test_();
