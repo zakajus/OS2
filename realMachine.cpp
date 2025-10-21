@@ -137,7 +137,7 @@ uint8_t RealMachine::convertCharToRealHexValue(uint8_t value) {
         value -= 97;
         return value;
     }
-    return 0; // TODO: ar nereikia cia kazkokios klaidos?
+    return 0;
 }
 
 
