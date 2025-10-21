@@ -180,21 +180,6 @@ bool isValidInstruction(const char* word) {
     return false;
 }
 
-uint8_t convertCharToRealHexValue1(uint8_t value){
-    if(value >= 48 && value <= 57){
-        value -= 48;
-        return value;
-    }
-    if(value >= 65 && value <= 70){
-        value -= 65;
-        return value;
-    }
-    if(value >= 97 && value <= 102){
-        value -= 97;
-        return value;
-    }
-}
-
 int RealMachine::convertTextToProgram(){
     uint32_t newMemory[256] = {0};
     uint32_t firstWord = supervisorMemory[0];
