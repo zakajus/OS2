@@ -5,14 +5,13 @@ using namespace std;
 void Monitor::displayNumber( uint32_t* src, uint32_t words){
     for (uint32_t i = 0; i < words; i++) {
         uint32_t word = src[i];
-        printf("%u\n", word);
+        printf(" %u ", word);
     }
 }
 
 void Monitor::displayText(uint32_t* src, uint32_t words){
     uint8_t* bytes = (uint8_t*)src;
     int totalBytes = words * 4;
-
     for(int i = 0; i < totalBytes; ++i){
         if (bytes[i] >= 32 && bytes[i] <= 126) { // Printable ASCII
             cout << (char)bytes[i];
@@ -22,7 +21,6 @@ void Monitor::displayText(uint32_t* src, uint32_t words){
             cout << '.'; // Non-printable characters
         }
     }
-    cout << endl;
 }
 
 void Monitor::display(uint32_t* src, uint32_t words, bool isNumber){

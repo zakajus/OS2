@@ -45,29 +45,26 @@ public:
     void printCurrentPage();
     void printVirtualMemory();
     void printRealMemory();
+    void printAsHex(uint32_t* memory, int size);
+    void printAsASCII(uint32_t *memory, int size);
+
     void changeSI(uint8_t i);
     void changePI(uint8_t i);
 
     void rm_run();
     int validateProgram();
     int convertTextToProgram();
-
-    static void reverseBytesInWord(uint32_t &word);
-    static uint8_t convertCharToRealHexValue(uint8_t value);
-
+    uint8_t convertCharToRealHexValue(uint8_t value);
+    void reverseBytesInWord(uint32_t &word);
+    
     void allocateMemoryForVirtualMachine();
     void freeMemoryFromVirtualMachine();
-    void testas2();
 
     uint32_t getWordFromMemory(int number);
-
     uint32_t getNextWord();
 
     void saveWordToMemoryFromAx(int number);
-
     void saveWordToMemoryFromBx(int number);
-
-    void printAsASCII(uint32_t *memory, int size);
 
     void testavimui();
 

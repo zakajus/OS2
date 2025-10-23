@@ -67,7 +67,7 @@ class VirtualMachine
         void not_() ;
         void jump(uint8_t x, uint8_t y) ;
         void jumpZero(uint8_t x, uint8_t y) ;
-        void jumpNotCarry(uint8_t x, uint8_t y) ; //pagalvot ar nereiks pakeist i jump not zero?
+        void jumpNotCarry(uint8_t x, uint8_t y) ; 
         void jumpBelow(uint8_t x, uint8_t y) ;
         void jumpAbove(uint8_t x, uint8_t y) ;
         void moveToAX(uint8_t x, uint8_t y) ;

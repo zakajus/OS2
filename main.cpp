@@ -4,7 +4,6 @@ using namespace std;
 #include "realMachine.h"
 #include "monitor.h"
 #include "keyboard.h"
-//#include "hardDisk.h"
 
 
 int main() {
