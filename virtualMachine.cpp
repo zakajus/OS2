@@ -13,6 +13,7 @@ VirtualMachine::VirtualMachine(uint32_t &rax, uint32_t &rbx,  uint16_t &ds, uint
     this->realMachine = &realMachine;
 }
 
+
 void VirtualMachine::add(uint8_t x,  uint8_t y)  { 
     int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     uint32_t valueToAdd = realMachine->getWordFromMemory(realAddress);
@@ -23,10 +24,8 @@ void VirtualMachine::add(uint8_t x,  uint8_t y)  {
     sf->cf = (*rax < originalRax) ? 1 : 0; 
     sf->zf = (*rax == 0) ? 1 : 0;  
     sf->af = (((originalRax & 0x0F) + (valueToAdd & 0x0F)) > 0x0F) ? 1 : 0; 
-    if(sf->cf){
-        *rbx = 1;
-    }
 }
+
 void VirtualMachine::substract( uint8_t x,  uint8_t y)  {
     int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     uint32_t valueToSubstract = realMachine->getWordFromMemory(realAddress);
@@ -35,11 +34,11 @@ void VirtualMachine::substract( uint8_t x,  uint8_t y)  {
         sf->zf = 0;
     }
 }
+
 void VirtualMachine::multiply( uint8_t x,  uint8_t y)  { 
     int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     uint32_t valueToMultiply = realMachine->getWordFromMemory(realAddress);
     uint32_t originalRax = *rax;
-
     *rax *= valueToMultiply;
     
     if (valueToMultiply != 0) {
@@ -52,6 +51,7 @@ void VirtualMachine::multiply( uint8_t x,  uint8_t y)  {
 
     sf->zf = (*rax == 0) ? 1 : 0;
 }
+
 void VirtualMachine::divide( uint8_t x,  uint8_t y)  {
     int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);
     uint32_t valueToDivideFrom = realMachine->getWordFromMemory(realAddress);
@@ -65,6 +65,7 @@ void VirtualMachine::divide( uint8_t x,  uint8_t y)  {
         sf->zf = 0;
     }
 }
+
 void VirtualMachine::compare()  {
     if(*rax > *rbx){//CF = 0, ZF = 0
         sf->cf = 0;
@@ -79,6 +80,7 @@ void VirtualMachine::compare()  {
         sf->cf = 0;
     }
 }
+
 void VirtualMachine::and_()  {
     uint32_t word = realMachine->getNextWord();
     *rbx = *rax & word;
@@ -100,7 +102,7 @@ void VirtualMachine::not_()  {
     sf->cf = 0;
 }
 
-void VirtualMachine::jump( uint8_t x,  uint8_t y)  {
+void VirtualMachine::jump(uint8_t x,  uint8_t y)  {
     *pc = x*16 + y;
 }
 
@@ -147,21 +149,6 @@ void VirtualMachine::execute(uint8_t x) { // TODO: implement
     //Paleidžiama nauja programa, kurios failo pavadinimas yra nurodomas RBX registre.
     //Yra galimybe paduoti bent vieną bloką duomenu programai kaip parametrą. Baitas x nurodo parametru˛ bloką.
     realMachine->changeSI(5);
-}
-
-uint8_t convertCharToRealHexValue(uint8_t value){
-    if(value >= 48 && value <= 57){
-        value -= 48;
-        return value;
-    }
-    if(value >= 65 && value <= 70){
-        value -= 65;
-        return value;
-    }
-    if(value >= 97 && value <= 102){
-        value -= 97;
-        return value;
-    }
 }
 
 void VirtualMachine::runNextCommand( uint32_t cmd) {
@@ -211,8 +198,8 @@ void VirtualMachine::runNextCommand( uint32_t cmd) {
      uint8_t x = (cmd >> 8) & 0xFF;
      uint8_t y = cmd & 0xFF;
 
-     x = convertCharToRealHexValue(x);
-     y = convertCharToRealHexValue(y);
+     x = realMachine->convertCharToRealHexValue(x);
+     y = realMachine->convertCharToRealHexValue(y);
 
     switch (opcode) {
         // Procesoriaus
@@ -277,11 +264,9 @@ void VirtualMachine::readFromKeyboard()  {
 }
 void VirtualMachine::printNumber()  {
     realMachine->changeSI(3);
-    //cia turetu pagal ideja nieko daugiau nereikt ir RBX registre bus tai ka spausdinam ar kaip
 }
 void VirtualMachine::printText()  {
     realMachine->changeSI(4);
-    //cia turetu pagal ideja nieko daugiau nereikt ir RBX registre bus tai ka spausdinam ar kaip
 }
 
 void VirtualMachine::_halt() {

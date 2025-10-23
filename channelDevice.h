@@ -63,15 +63,15 @@ public:
     }
 
     void copyFromUserMemory(uint32_t* dest, uint32_t offset);//patikrint
-    void copyFromSupervisorMemory(uint32_t* dest, uint32_t offset); //maybe veikia
-    void copyFromExternalMemory(uint32_t* dest); //veikia
+    void copyFromSupervisorMemory(uint32_t* dest, uint32_t offset); 
+    void copyFromExternalMemory(uint32_t* dest); 
     void copyFromInputStream(uint32_t* dest); //TAISYT
     void copyFromRbx(uint32_t* dest);//patikrint
 
-    void copyToUserMemory(uint32_t offset, const uint32_t* src); //maybe gerai veikia
-    void copyToSupervisorMemory(uint32_t offset, const uint32_t* src); //veikia
-    void copyToOutputStream(uint32_t* src); //TAISYT
-    void copyToRbx(const uint32_t* src); //veikia
+    void copyToUserMemory(uint32_t offset, const uint32_t* src); 
+    void copyToSupervisorMemory(uint32_t offset, const uint32_t* src); 
+    void copyToOutputStream(uint32_t* src); 
+    void copyToRbx(const uint32_t* src); //patikrint
     void xchg();
     
 };
