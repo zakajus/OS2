@@ -32,9 +32,9 @@ private:
     RealMachine* realMachine;
     Monitor* monitor;
     Keyboard* keyboard;
-    const size_t userMemSize = 256*16; //16 blocks * 16 words no idea kodel butent tiek ok..
-    const size_t supervisorMemSize = 512; //32 blocks * 16 words 
-    const size_t BLOCK_SIZE = 16; // 16 words 
+    const size_t userMemSize = 1632; 
+    const size_t supervisorMemSize = 512; 
+    const size_t BLOCK_SIZE = 16; 
 
 public:
      ChannelDevice(RealMachine* realMachine, uint32_t* userMemory, uint32_t* supervisorMemory, Monitor* monitor, Keyboard* keyboard) 

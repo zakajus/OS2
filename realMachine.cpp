@@ -59,7 +59,7 @@ void RealMachine::testavimui(){
     // printAsHex(supervisorMemory, 256);
     convertTextToProgram();
     //printAsASCII(supervisorMemory, 256);
-    printAsHex(supervisorMemory, 256);
+    //printAsHex(supervisorMemory, 256);
 
     allocateMemoryForVirtualMachine();
     //ptr dabar rodo i puslapiu lentele
