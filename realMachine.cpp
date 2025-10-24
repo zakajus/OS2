@@ -59,7 +59,7 @@ void RealMachine::testavimui(){
     // printAsHex(supervisorMemory, 256);
     convertTextToProgram();
     //printAsASCII(supervisorMemory, 256);
-    //printAsHex(supervisorMemory, 256);
+    printAsHex(supervisorMemory, 256);
 
     allocateMemoryForVirtualMachine();
     //ptr dabar rodo i puslapiu lentele
@@ -206,8 +206,8 @@ int RealMachine::convertTextToProgram(){
             word[2] = convertCharToRealHexValue(word[2]);
             word[3] = convertCharToRealHexValue(word[3]);
 
-            uint32_t value = (static_cast<uint32_t>(word[0]) << 24) |  (static_cast<uint32_t>(word[1]) << 16) | 
-                     (static_cast<uint32_t>(word[2]) << 8)  |  (static_cast<uint32_t>(word[3]));
+            uint32_t value = (static_cast<uint32_t>(word[0]) << 12) |  (static_cast<uint32_t>(word[1]) << 8) | 
+                     (static_cast<uint32_t>(word[2]) << 4)  |  (static_cast<uint32_t>(word[3]));
             newMemory[x*16 + y] = value;
             
         }
@@ -335,17 +335,21 @@ void RealMachine::printVirtualMemory(){
 }
 
 uint32_t RealMachine::getNextWord(){
-    ++pc;
+    //++pc;
     int i = pc / 16;
     int j = pc % 16;
     
     int realAddress = translateLocalAdressToRealAddress(i, j);
     uint32_t command = userMemory[realAddress];
-    command = ((command & 0x000000FF) << 24) |  // Byte 0 -> Byte 3
-          ((command & 0x0000FF00) << 8)  |  // Byte 1 -> Byte 2
-          ((command & 0x00FF0000) >> 8)  |  // Byte 2 -> Byte 1
-          ((command & 0xFF000000) >> 24);
-    cout << "next word: " << command << endl;
+    uint8_t* word = (uint8_t*)&command;
+
+    if(word[2] != 0 && word[3] != 0){
+        command = ((command & 0x000000FF) << 24) |  // Byte 0 -> Byte 3
+        ((command & 0x0000FF00) << 8)  |  // Byte 1 -> Byte 2
+        ((command & 0x00FF0000) >> 8)  |  // Byte 2 -> Byte 1
+        ((command & 0xFF000000) >> 24);
+    }
+    ++pc;
     return command;
 }
 
