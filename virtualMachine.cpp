@@ -83,21 +83,20 @@ void VirtualMachine::compare()  {
 
 void VirtualMachine::and_()  {
     uint32_t word = realMachine->getNextWord();
+    *pc += 1;
     *rbx = *rax & word;
-
     sf->zf = (*rbx == 0) ? 1 : 0;  // Zero flag if result is 0
     sf->cf = 0; // CF is typically cleared for logical operations
 }
 void VirtualMachine::or_()  {
     uint32_t word = realMachine->getNextWord();
+    *pc += 1;
     *rbx = *rax | word;  // Bitwise OR, store result in RBX
-    
     sf->zf = (*rbx == 0) ? 1 : 0;  // Zero flag if result is 0
     sf->cf = 0;  // CF typically cleared for logical operations
 }
 void VirtualMachine::not_()  {
     *rbx = ~(*rax);  // Bitwise NOT of RAX, store result in RBX
-    
     sf->zf = (*rbx == 0) ? 1 : 0;
     sf->cf = 0;
 }
