@@ -237,7 +237,7 @@ int RealMachine::convertTextToProgram(){
     return 0;
 }
 
-int RealMachine::runNextCommand(){
+int RealMachine::stepIntoNextCommand(){
     uint32_t pageTable[16];
     for(int i = 0; i < 16; i++){
         pageTable[i] = userMemory[ptr * 16 + i];

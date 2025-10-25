@@ -78,7 +78,7 @@ int main() {
         realMachine.setEverythingForSteppingMode(name);
         cout << "Stepping mode: Press SPACE to continue, or 'q' to quit\n";
         while(1){
-            if(realMachine.runNextCommand() != 0){
+            if(realMachine.stepIntoNextCommand() != 0){
                 break;
             }
             
