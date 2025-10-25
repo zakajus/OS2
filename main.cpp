@@ -97,6 +97,13 @@ int main() {
             else if(c == 'q' || c == 'Q'){
                 break;
             }
+            else {
+                realMachine.printAllRegisterValues();
+                realMachine.printCurrentPage();
+            }
+
+            cout << "\nNext command: ";
+            cout << "0x" << hex << setw(8) << setfill('0') << nextCommand << dec << "\n" ;
         }
     }
     if(choice == 2){

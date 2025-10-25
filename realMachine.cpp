@@ -374,7 +374,7 @@ void RealMachine::printCurrentPage(){
     int realPageAddress = userMemory[ptr * 16 + x];
     for(int i = 0; i < 16; ++i){
         uint32_t word = userMemory[realPageAddress+i];
-        printf("0x%08X\n", word);
+        printf("0x%08X ", word);
     }
     cout << endl;
 }
