@@ -92,10 +92,11 @@ void RealMachine::testavimui(){
         int j = pc % 16;
         
         uint32_t command = userMemory[pageTable[i]*16+j];
-        command = ((command & 0x000000FF) << 24) |  // Byte 0 -> Byte 3
-          ((command & 0x0000FF00) << 8)  |  // Byte 1 -> Byte 2
-          ((command & 0x00FF0000) >> 8)  |  // Byte 2 -> Byte 1
-          ((command & 0xFF000000) >> 24);
+        reverseBytesInWord(command);
+        // command = ((command & 0x000000FF) << 24) |  // Byte 0 -> Byte 3
+        //   ((command & 0x0000FF00) << 8)  |  // Byte 1 -> Byte 2
+        //   ((command & 0x00FF0000) >> 8)  |  // Byte 2 -> Byte 1
+        //   ((command & 0xFF000000) >> 24);
         //cout << "0x" << std::hex << command << std::dec << endl;
        // cout << "Program counter: " << "0x" << std::hex << pc << std::dec << endl;
         ++pc;
@@ -236,67 +237,118 @@ int RealMachine::convertTextToProgram(){
     return 0;
 }
 
+int RealMachine::runNextCommand(){
+    uint32_t pageTable[16];
+    for(int i = 0; i < 16; i++){
+        pageTable[i] = userMemory[ptr * 16 + i];
+    }
 
-void RealMachine::rm_run(){ // ar nereiktu kaip parametro paduot pavadinimo 
+    int i = pc / 16;
+    int j = pc % 16;
+    uint32_t command = userMemory[pageTable[i]*16+j];
+    reverseBytesInWord(command);
+    ++pc;
+    virtualMachine->runNextCommand(command);
+    if(test_() != 0){
+        return 1;
+    }
+    si = 0;
+    return 0;
+}
+
+void RealMachine::rm_run(uint32_t name){ // ar nereiktu kaip parametro paduot pavadinimo 
+    mode = 1;
     channelDevice->setST(3); //is isorines
     channelDevice->setDT(2); //i supervizorine
-    channelDevice->setNAME(0x315A5650); //PVZ1
+    channelDevice->setNAME(name); //PVZ1
     channelDevice->setRNUM(256); //16
     channelDevice->setOFF(0);
     channelDevice->setDB(0);
     channelDevice->setSB(0);
     channelDevice->xchg();
+
     if(convertTextToProgram() != 0){ //validacija
         return;
     }
 
-    virtualMachine = new VirtualMachine(rax, rbx, ds, cs, pc, sf, *this);
     allocateMemoryForVirtualMachine();
+    channelDevice->setST(2); //is supervizorines
+    channelDevice->setDT(1); //i vartotojo
+    channelDevice->setRNUM(16);
+    virtualMachine = new VirtualMachine(rax, rbx, ds, cs, pc, sf, *this);
+    
     uint32_t pageTable[16];
     for(int i = 0; i < 16; i++){
         pageTable[i] = userMemory[ptr * 16 + i];
     }
-    channelDevice->setST(2); //is supervizorines
-    channelDevice->setDT(1); //i vartotojo
-    channelDevice->setRNUM(16);
+    
 
     for(int i = 0; i < 16; ++i){
         channelDevice->setSB(i); //is kurio takelio kopijuojam
         channelDevice->setDB(pageTable[i]); //i kuri takeli kopijuojam
         channelDevice->xchg();
     }
-    pc = 48;
-    cs = 48; 
-    ds = 0;
 
-    while(1){
-        int i = pc / 16;
-        int j = pc % 16;
-        uint32_t command = userMemory[pageTable[i]+j];
-        ++pc;
-        virtualMachine->runNextCommand(command);
-        if(test_() != 0){
-            break;
-        }
+    if(test_() != 0){
+        cout << "interupttas po perkopijavmo" << endl;
+        return;
     }
+    pc = 48;
+    pi = 0;
 
     while(1){
         int i = pc / 16;
         int j = pc % 16;
         uint32_t command = userMemory[pageTable[i]*16+j];
-        command = ((command & 0x000000FF) << 24) |  // Byte 0 -> Byte 3
-          ((command & 0x0000FF00) << 8)  |  // Byte 1 -> Byte 2
-          ((command & 0x00FF0000) >> 8)  |  // Byte 2 -> Byte 1
-          ((command & 0xFF000000) >> 24);
+        reverseBytesInWord(command);
         ++pc;
         virtualMachine->runNextCommand(command);
-        //printAllRegisterValues();
         if(test_() != 0){
-            si = 0;
-            pi = 0;
             break;
         }
+        si = 0;
     }
+}
+
+void RealMachine::setEverythingForSteppingMode(uint32_t name){
+    channelDevice->setST(3); //is isorines
+    channelDevice->setDT(2); //i supervizorine
+    channelDevice->setNAME(name); //PVZ1
+    channelDevice->setRNUM(256); //16
+    channelDevice->setOFF(0);
+    channelDevice->setDB(0);
+    channelDevice->setSB(0);
+    channelDevice->xchg();
+
+    if(convertTextToProgram() != 0){ //validacija
+        return;
+    }
+
+    allocateMemoryForVirtualMachine();
+    channelDevice->setST(2); //is supervizorines
+    channelDevice->setDT(1); //i vartotojo
+    channelDevice->setRNUM(16);
+    virtualMachine = new VirtualMachine(rax, rbx, ds, cs, pc, sf, *this);
+    
+    uint32_t pageTable[16];
+    for(int i = 0; i < 16; i++){
+        pageTable[i] = userMemory[ptr * 16 + i];
+    }
+    
+
+    for(int i = 0; i < 16; ++i){
+        channelDevice->setSB(i); //is kurio takelio kopijuojam
+        channelDevice->setDB(pageTable[i]); //i kuri takeli kopijuojam
+        channelDevice->xchg();
+    }
+
+    if(test_() != 0){
+        cout << "interupttas po perkopijavmo" << endl;
+        return;
+    }
+    pc = 48;
+    pi = 0;
+    si = 0;
 }
 
 uint32_t RealMachine::translateLocalAdressToRealAddress(uint8_t x, uint8_t y){
@@ -349,7 +401,6 @@ uint32_t RealMachine::getNextWord(){
         ((command & 0x00FF0000) >> 8)  |  // Byte 2 -> Byte 1
         ((command & 0xFF000000) >> 24);
     }
-    ++pc;
     return command;
 }
 

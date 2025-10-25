@@ -51,7 +51,9 @@ public:
     void changeSI(uint8_t i);
     void changePI(uint8_t i);
 
-    void rm_run();
+    void rm_run(uint32_t name);
+    void setEverythingForSteppingMode(uint32_t name);
+    int runNextCommand();
     int validateProgram();
     int convertTextToProgram();
     uint8_t convertCharToRealHexValue(uint8_t value);
