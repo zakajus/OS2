@@ -237,7 +237,7 @@ int RealMachine::convertTextToProgram(){
     return 0;
 }
 
-int RealMachine::runNextCommand(){
+int RealMachine::stepIntoNextCommand(){
     uint32_t pageTable[16];
     for(int i = 0; i < 16; i++){
         pageTable[i] = userMemory[ptr * 16 + i];
@@ -511,6 +511,71 @@ int RealMachine::test_(){
                 //rbx failo pavadinimas
                 //x - parametru blokas
                 //paleidziam nauja programa
+
+                // nuskaitom programa
+                channelDevice->setNAME(rbx);
+                channelDevice->setST(3) ;//is isorines
+                channelDevice->setDT(2); //i supervizorine
+                channelDevice->setRNUM(256); //16
+                channelDevice->setOFF(0);
+                channelDevice->setDB(0);
+                channelDevice->setSB(0);
+                channelDevice->xchg();
+
+                convertTextToProgram();
+
+                allocateMemoryForVirtualMachine();
+
+                channelDevice->setST(2); //is supervizorines
+                channelDevice->setDT(1); //i vartotojo
+                channelDevice->setRNUM(16);
+
+                virtualMachine = new VirtualMachine(rax, rbx, ds, cs, pc, sf, *this);
+                uint32_t pageTable[16];
+
+                for(int i = 0; i < 16; i++){
+                    pageTable[i] = userMemory[ptr * 16 + i];
+                }
+
+
+                for(int i = 0; i < 16; ++i){
+                    channelDevice->setSB(i);
+                    channelDevice->setDB(pageTable[i]);
+                    channelDevice->xchg();
+                }
+
+                if(test_() != 0){
+                    cout << "interupttas po perkopijavmo" << endl;
+                }
+
+                pi = 0;
+                pc = 48;
+                while(1){
+                    int i = pc / 16;
+                    int j = pc % 16;
+
+                    uint32_t command = userMemory[pageTable[i]*16+j];
+                    command = ((command & 0x000000FF) << 24) |  // Byte 0 -> Byte 3
+                      ((command & 0x0000FF00) << 8)  |  // Byte 1 -> Byte 2
+                      ((command & 0x00FF0000) >> 8)  |  // Byte 2 -> Byte 1
+                      ((command & 0xFF000000) >> 24);
+                    //cout << "0x" << std::hex << command << std::dec << endl;
+                    // cout << "Program counter: " << "0x" << std::hex << pc << std::dec << endl;
+                    ++pc;
+                    virtualMachine->runNextCommand(command);
+                    //printAllRegisterValues();
+                    //next - taisyt ka irasom i rbx, nes cia buvo tekstas - rbx irgi reik atvaizduto kaip tekst
+                    if(test_() != 0){
+                        //cout << "interupttas ye" << endl;
+                        si = 0;
+                        pi = 0;
+                        break;
+                    }
+                    si = 0;
+                }
+
+
+
                 si = 0;
                 break;
             }
