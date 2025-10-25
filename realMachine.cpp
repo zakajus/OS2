@@ -1,6 +1,7 @@
 #include "realMachine.h"
 #include "channelDevice.h"
 #include <algorithm>
+#include <numeric>
 using namespace std;
 
 RealMachine::RealMachine(Monitor& monitor, Keyboard& keyboard) 
@@ -67,6 +68,8 @@ void RealMachine::testavimui(){
     channelDevice->setDT(1); //i vartotojo
     channelDevice->setRNUM(16);
 
+
+    changeTI(10);
     virtualMachine = new VirtualMachine(rax, rbx, ds, cs, pc, sf, *this);
     uint32_t pageTable[16];
     
@@ -303,6 +306,7 @@ void RealMachine::rm_run(uint32_t name){ // ar nereiktu kaip parametro paduot pa
         reverseBytesInWord(command);
         ++pc;
         virtualMachine->runNextCommand(command);
+        reduceTI(1);
         if(test_() != 0){
             break;
         }
@@ -421,6 +425,22 @@ void RealMachine::changePI(uint8_t i){
     pi = i;
 }
 
+void RealMachine::changeTI(uint8_t i) {
+    ti = i;
+}
+
+void RealMachine::reduceTI(uint8_t i) {
+    if ((ti - i) <= 0) {
+        ti = 0;
+    }
+    else if (ti > 10) {
+        ti = 0;
+        }
+    else {
+        ti -= i;
+    }
+}
+
 
 void RealMachine::allocateMemoryForVirtualMachine(){
     int temp[17];
@@ -481,6 +501,7 @@ int RealMachine::test_(){
                 channelDevice->xchg();
                 rbx = channelDevice->getReg();
                 si = 0;
+                reduceTI(2);
                 break;
             }
                 
@@ -492,6 +513,7 @@ int RealMachine::test_(){
                 channelDevice->setIsNumber(1);
                 channelDevice->xchg();
                 si = 0;
+                reduceTI(2);
                 break;
             }
                 
@@ -503,6 +525,7 @@ int RealMachine::test_(){
                 channelDevice->setIsNumber(0);
                 channelDevice->xchg();
                 si = 0;
+                reduceTI(2);
                 break;;
             }
                 
@@ -544,6 +567,7 @@ int RealMachine::test_(){
     }
     if(ti == 0){
         //change to other program
+        changeTI(10);
     }
     return 0;
 }
