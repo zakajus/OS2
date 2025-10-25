@@ -1,7 +1,6 @@
 #include "realMachine.h"
 #include "channelDevice.h"
 #include <algorithm>
-#include <numeric>
 using namespace std;
 
 RealMachine::RealMachine(Monitor& monitor, Keyboard& keyboard) 
@@ -68,8 +67,6 @@ void RealMachine::testavimui(){
     channelDevice->setDT(1); //i vartotojo
     channelDevice->setRNUM(16);
 
-
-    changeTI(10);
     virtualMachine = new VirtualMachine(rax, rbx, ds, cs, pc, sf, *this);
     uint32_t pageTable[16];
     
@@ -204,6 +201,16 @@ int RealMachine::convertTextToProgram(){
         if(isValidInstruction(wordTocheckInstruction)){
             newMemory[x*16 + y] = instruction;
         }
+        else if(word[0] =='0' && word[1] == 'D' && word[2] == '0' && word[3] == 'A'){
+            word[0] = '\n';
+            word[1] = ' ';
+            word[2] = ' ';
+            word[3] = ' ';
+            newMemory[x*16 + y] = instruction;
+            uint32_t value = (static_cast<uint32_t>(word[0]) << 24) |  (static_cast<uint32_t>(word[1]) << 16) | 
+                     (static_cast<uint32_t>(word[2]) << 8)  |  (static_cast<uint32_t>(word[3]));
+            newMemory[x*16 + y] = value;
+        }
         else if(isValidHexDigit(word[0]) && isValidHexDigit(word[1]) && isValidHexDigit(word[2]) && isValidHexDigit(word[3])){
             word[0] = convertCharToRealHexValue(word[0]);
             word[1] = convertCharToRealHexValue(word[1]);
@@ -219,6 +226,7 @@ int RealMachine::convertTextToProgram(){
         else if(word[0] == '!' && word[1] == '!' && word[2] == '!' && word[3] == '!'){
             break;
         }
+        
         else{ //nuo 33 iki 126 gali but characteriai kur tiesiog tekstines kontantos
             int o = 0;
             for(int j = 0; j < 4; ++j){
@@ -273,7 +281,6 @@ void RealMachine::rm_run(uint32_t name){ // ar nereiktu kaip parametro paduot pa
     if(convertTextToProgram() != 0){ //validacija
         return;
     }
-
     allocateMemoryForVirtualMachine();
     channelDevice->setST(2); //is supervizorines
     channelDevice->setDT(1); //i vartotojo
@@ -298,7 +305,7 @@ void RealMachine::rm_run(uint32_t name){ // ar nereiktu kaip parametro paduot pa
     }
     pc = 48;
     pi = 0;
-
+    mode = 0;
     while(1){
         int i = pc / 16;
         int j = pc % 16;
@@ -306,7 +313,7 @@ void RealMachine::rm_run(uint32_t name){ // ar nereiktu kaip parametro paduot pa
         reverseBytesInWord(command);
         ++pc;
         virtualMachine->runNextCommand(command);
-        reduceTI(1);
+
         if(test_() != 0){
             break;
         }
@@ -315,6 +322,7 @@ void RealMachine::rm_run(uint32_t name){ // ar nereiktu kaip parametro paduot pa
 }
 
 void RealMachine::setEverythingForSteppingMode(uint32_t name){
+    mode = 1;
     channelDevice->setST(3); //is isorines
     channelDevice->setDT(2); //i supervizorine
     channelDevice->setNAME(name); //PVZ1
@@ -353,6 +361,7 @@ void RealMachine::setEverythingForSteppingMode(uint32_t name){
     pc = 48;
     pi = 0;
     si = 0;
+    mode = 0;
 }
 
 uint32_t RealMachine::translateLocalAdressToRealAddress(uint8_t x, uint8_t y){
@@ -425,22 +434,6 @@ void RealMachine::changePI(uint8_t i){
     pi = i;
 }
 
-void RealMachine::changeTI(uint8_t i) {
-    ti = i;
-}
-
-void RealMachine::reduceTI(uint8_t i) {
-    if ((ti - i) <= 0) {
-        ti = 0;
-    }
-    else if (ti > 10) {
-        ti = 0;
-        }
-    else {
-        ti -= i;
-    }
-}
-
 
 void RealMachine::allocateMemoryForVirtualMachine(){
     int temp[17];
@@ -487,6 +480,7 @@ void RealMachine::saveWordToMemoryFromBx(int number){
 }
 
 int RealMachine::test_(){
+    mode = 1;
     if(si > 0){
         switch (si){
             case 1:{
@@ -501,7 +495,6 @@ int RealMachine::test_(){
                 channelDevice->xchg();
                 rbx = channelDevice->getReg();
                 si = 0;
-                reduceTI(2);
                 break;
             }
                 
@@ -513,7 +506,6 @@ int RealMachine::test_(){
                 channelDevice->setIsNumber(1);
                 channelDevice->xchg();
                 si = 0;
-                reduceTI(2);
                 break;
             }
                 
@@ -525,7 +517,6 @@ int RealMachine::test_(){
                 channelDevice->setIsNumber(0);
                 channelDevice->xchg();
                 si = 0;
-                reduceTI(2);
                 break;;
             }
                 
@@ -567,7 +558,7 @@ int RealMachine::test_(){
     }
     if(ti == 0){
         //change to other program
-        changeTI(10);
     }
+    mode = 0;
     return 0;
 }
