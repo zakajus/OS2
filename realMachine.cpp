@@ -526,6 +526,14 @@ int RealMachine::test_(){
                 //x - parametru blokas
                 //paleidziam nauja programa
                 si = 0;
+
+                // Kazkaip reikia parametro bloka passinti i nauja programa bet nesugalvoju kaip
+                // uint32_t parentPtr = ptr;
+
+                rm_run(rbx);
+
+                si = 0;
+
                 break;
             }
                 
