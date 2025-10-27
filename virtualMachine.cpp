@@ -147,6 +147,7 @@ void VirtualMachine::saveFromBX( uint8_t x,  uint8_t y)  { //patikrint
 void VirtualMachine::execute(uint8_t x) { // TODO: implement
     //Paleidžiama nauja programa, kurios failo pavadinimas yra nurodomas RBX registre.
     //Yra galimybe paduoti bent vieną bloką duomenu programai kaip parametrą. Baitas x nurodo parametru˛ bloką.
+    (*rax) = static_cast<uint32_t>(x);
     realMachine->changeSI(5);
 }
 
@@ -193,10 +194,10 @@ void VirtualMachine::runNextCommand( uint32_t cmd) {
     }
 
     // 2 baitu opcodes (yra xy dalis)
+    
     const uint16_t opcode = (cmd >> 16) & 0xFFFF; // & xFF(FF) bitmaskas pravalo prasiftintus bitus
      uint8_t x = (cmd >> 8) & 0xFF;
      uint8_t y = cmd & 0xFF;
-
      x = realMachine->convertCharToRealHexValue(x);
      y = realMachine->convertCharToRealHexValue(y);
 
@@ -246,7 +247,7 @@ void VirtualMachine::runNextCommand( uint32_t cmd) {
             saveFromBX(x, y);
             break;
         case 0x4558: // EXEx - kazkodel turim viena 3 baitu opkoda xd? ziurima tik i EX
-            execute(x);
+            execute(y);
             break;
 
         default:

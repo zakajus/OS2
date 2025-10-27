@@ -126,6 +126,7 @@ void ChannelDevice::copyFromExternalMemory(uint32_t* dest) {
 
 void ChannelDevice::copyToSupervisorMemory(uint32_t offset, const uint32_t* src) {
     if (offset + rnum > supervisorMemSize) {
+        cout << "Ar ccia tas interuptsa" << endl;
         realMachine->changePI(1);
     }
     memcpy(supervisorMemory + offset, src, rnum*4); 

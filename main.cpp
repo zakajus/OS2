@@ -82,7 +82,7 @@ int main() {
                 break;
             }
             
-            //realMachine.printAllRegisterValues();
+            realMachine.printAllRegisterValues();
             //realMachine.printCurrentPage();
             uint32_t nextCommand = realMachine.getNextWord();
             //cout << "\nNext command: ";
@@ -97,13 +97,6 @@ int main() {
             else if(c == 'q' || c == 'Q'){
                 break;
             }
-            else {
-                realMachine.printAllRegisterValues();
-                realMachine.printCurrentPage();
-            }
-
-            cout << "\nNext command: ";
-            cout << "0x" << hex << setw(8) << setfill('0') << nextCommand << dec << "\n" ;
         }
     }
     if(choice == 2){

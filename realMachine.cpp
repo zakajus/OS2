@@ -244,7 +244,11 @@ int RealMachine::convertTextToProgram(){
             ++x;
         }
     }
+    
     memcpy(supervisorMemory, newMemory, 256 * sizeof(uint32_t));
+    if(supervisorMemory[496] > 0){
+        memcpy(supervisorMemory, supervisorMemory+496, 16 * sizeof(uint32_t));
+    }
     return 0;
 }
 
@@ -495,6 +499,7 @@ int RealMachine::test_(){
                 channelDevice->xchg();
                 rbx = channelDevice->getReg();
                 si = 0;
+                mode = 0;
                 break;
             }
                 
@@ -506,6 +511,7 @@ int RealMachine::test_(){
                 channelDevice->setIsNumber(1);
                 channelDevice->xchg();
                 si = 0;
+                mode = 0;
                 break;
             }
                 
@@ -517,23 +523,28 @@ int RealMachine::test_(){
                 channelDevice->setIsNumber(0);
                 channelDevice->xchg();
                 si = 0;
-                break;;
+                mode = 0;
+                break;
             }
                 
             case 5:{
                 //EXEx
                 //rbx failo pavadinimas
-                //x - parametru blokas
+                //x - parametru blokas esantis rax
                 //paleidziam nauja programa
+                //tiesiog galim tuos parametrus perkopijuot i supervizorines paskutine eilute
+
                 si = 0;
-
-                // Kazkaip reikia parametro bloka passinti i nauja programa bet nesugalvoju kaip
-                // uint32_t parentPtr = ptr;
-
+                channelDevice->setST(1); //is vartotojo
+                channelDevice->setDT(2); //i supervizorine
+                uint16_t number = userMemory[(ptr)*16 + (rax)];
+                channelDevice->setSB(number);
+                channelDevice->setDB(31);
+                channelDevice->setOFF(0);
+                channelDevice->setRNUM(16);
+                channelDevice->xchg();
                 rm_run(rbx);
-
                 si = 0;
-
                 break;
             }
                 
