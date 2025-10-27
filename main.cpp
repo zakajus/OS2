@@ -82,11 +82,11 @@ int main() {
                 break;
             }
             
-            //realMachine.printAllRegisterValues();
-            //realMachine.printCurrentPage();
+            realMachine.printAllRegisterValues();
+            realMachine.printCurrentPage();
             uint32_t nextCommand = realMachine.getNextWord();
-            //cout << "\nNext command: ";
-            //cout << "0x" << hex << setw(8) << setfill('0') << nextCommand << dec << "\n" ;
+            cout << "\nNext command: ";
+            cout << "0x" << hex << setw(8) << setfill('0') << nextCommand << dec << "\n" ;
             cout.flush();
             c = getKeyPress();  // Changed from getch()
             

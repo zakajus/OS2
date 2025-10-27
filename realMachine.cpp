@@ -201,6 +201,16 @@ int RealMachine::convertTextToProgram(){
         if(isValidInstruction(wordTocheckInstruction)){
             newMemory[x*16 + y] = instruction;
         }
+        else if(word[0] =='0' && word[1] == 'D' && word[2] == '0' && word[3] == 'A'){
+            word[0] = '\n';
+            word[1] = ' ';
+            word[2] = ' ';
+            word[3] = ' ';
+            newMemory[x*16 + y] = instruction;
+            uint32_t value = (static_cast<uint32_t>(word[0]) << 24) |  (static_cast<uint32_t>(word[1]) << 16) | 
+                     (static_cast<uint32_t>(word[2]) << 8)  |  (static_cast<uint32_t>(word[3]));
+            newMemory[x*16 + y] = value;
+        }
         else if(isValidHexDigit(word[0]) && isValidHexDigit(word[1]) && isValidHexDigit(word[2]) && isValidHexDigit(word[3])){
             word[0] = convertCharToRealHexValue(word[0]);
             word[1] = convertCharToRealHexValue(word[1]);
@@ -216,6 +226,7 @@ int RealMachine::convertTextToProgram(){
         else if(word[0] == '!' && word[1] == '!' && word[2] == '!' && word[3] == '!'){
             break;
         }
+        
         else{ //nuo 33 iki 126 gali but characteriai kur tiesiog tekstines kontantos
             int o = 0;
             for(int j = 0; j < 4; ++j){
@@ -233,7 +244,11 @@ int RealMachine::convertTextToProgram(){
             ++x;
         }
     }
+    
     memcpy(supervisorMemory, newMemory, 256 * sizeof(uint32_t));
+    if(supervisorMemory[496] > 0){
+        memcpy(supervisorMemory, supervisorMemory+497, 16 * sizeof(uint32_t));
+    }
     return 0;
 }
 
@@ -257,6 +272,64 @@ int RealMachine::stepIntoNextCommand(){
 }
 
 void RealMachine::rm_run(uint32_t name){ // ar nereiktu kaip parametro paduot pavadinimo 
+    mode = 1;
+    channelDevice->setST(3); //is isorines
+    channelDevice->setDT(2); //i supervizorine
+    channelDevice->setNAME(name); //PVZ1
+    channelDevice->setRNUM(256); //16
+    channelDevice->setOFF(0);
+    channelDevice->setDB(0);
+    channelDevice->setSB(0);
+    channelDevice->xchg();
+
+    if(convertTextToProgram() != 0){ //validacija
+        return;
+    }
+    allocateMemoryForVirtualMachine();
+    channelDevice->setST(2); //is supervizorines
+    channelDevice->setDT(1); //i vartotojo
+    channelDevice->setRNUM(16);
+    virtualMachine = new VirtualMachine(rax, rbx, ds, cs, pc, sf, *this);
+    
+    uint32_t pageTable[16];
+    for(int i = 0; i < 16; i++){
+        pageTable[i] = userMemory[ptr * 16 + i];
+    }
+    
+
+    for(int i = 0; i < 16; ++i){
+        channelDevice->setSB(i); //is kurio takelio kopijuojam
+        channelDevice->setDB(pageTable[i]); //i kuri takeli kopijuojam
+        channelDevice->xchg();
+    }
+    printAsASCII(userMemory, 1632);
+
+    if(test_() != 0){
+        cout << "interupttas po perkopijavmo" << endl;
+        return;
+    }
+    pc = 0x30;
+    pi = 0;
+    mode = 0;
+    while(1){
+        int i = pc / 16;
+        int j = pc % 16;
+        uint32_t command = userMemory[pageTable[i]*16+j];
+        reverseBytesInWord(command);
+        ++pc;
+        virtualMachine->runNextCommand(command);
+
+        if(si + pi > 0 || ti == 0){ //
+            if (test_() != 0){
+                return;
+            }
+            //break;
+        }
+        //si = 0;
+    }
+}
+
+void RealMachine::setEverythingForSteppingMode(uint32_t name){
     mode = 1;
     channelDevice->setST(3); //is isorines
     channelDevice->setDT(2); //i supervizorine
@@ -295,60 +368,8 @@ void RealMachine::rm_run(uint32_t name){ // ar nereiktu kaip parametro paduot pa
     }
     pc = 48;
     pi = 0;
-
-    while(1){
-        int i = pc / 16;
-        int j = pc % 16;
-        uint32_t command = userMemory[pageTable[i]*16+j];
-        reverseBytesInWord(command);
-        ++pc;
-        virtualMachine->runNextCommand(command);
-        if(test_() != 0){
-            break;
-        }
-        si = 0;
-    }
-}
-
-void RealMachine::setEverythingForSteppingMode(uint32_t name){
-    channelDevice->setST(3); //is isorines
-    channelDevice->setDT(2); //i supervizorine
-    channelDevice->setNAME(name); //PVZ1
-    channelDevice->setRNUM(256); //16
-    channelDevice->setOFF(0);
-    channelDevice->setDB(0);
-    channelDevice->setSB(0);
-    channelDevice->xchg();
-
-    if(convertTextToProgram() != 0){ //validacija
-        return;
-    }
-
-    allocateMemoryForVirtualMachine();
-    channelDevice->setST(2); //is supervizorines
-    channelDevice->setDT(1); //i vartotojo
-    channelDevice->setRNUM(16);
-    virtualMachine = new VirtualMachine(rax, rbx, ds, cs, pc, sf, *this);
-    
-    uint32_t pageTable[16];
-    for(int i = 0; i < 16; i++){
-        pageTable[i] = userMemory[ptr * 16 + i];
-    }
-    
-
-    for(int i = 0; i < 16; ++i){
-        channelDevice->setSB(i); //is kurio takelio kopijuojam
-        channelDevice->setDB(pageTable[i]); //i kuri takeli kopijuojam
-        channelDevice->xchg();
-    }
-
-    if(test_() != 0){
-        cout << "interupttas po perkopijavmo" << endl;
-        return;
-    }
-    pc = 48;
-    pi = 0;
     si = 0;
+    mode = 0;
 }
 
 uint32_t RealMachine::translateLocalAdressToRealAddress(uint8_t x, uint8_t y){
@@ -370,7 +391,7 @@ void RealMachine::printCurrentPage(){
     int realPageAddress = userMemory[ptr * 16 + x];
     for(int i = 0; i < 16; ++i){
         uint32_t word = userMemory[realPageAddress+i];
-        printf("0x%08X\n", word);
+        printf("0x%08X ", word);
     }
     cout << endl;
 }
@@ -467,6 +488,7 @@ void RealMachine::saveWordToMemoryFromBx(int number){
 }
 
 int RealMachine::test_(){
+    mode = 1;
     if(si > 0){
         switch (si){
             case 1:{
@@ -481,6 +503,7 @@ int RealMachine::test_(){
                 channelDevice->xchg();
                 rbx = channelDevice->getReg();
                 si = 0;
+                mode = 0;
                 break;
             }
                 
@@ -492,6 +515,7 @@ int RealMachine::test_(){
                 channelDevice->setIsNumber(1);
                 channelDevice->xchg();
                 si = 0;
+                mode = 0;
                 break;
             }
                 
@@ -503,79 +527,27 @@ int RealMachine::test_(){
                 channelDevice->setIsNumber(0);
                 channelDevice->xchg();
                 si = 0;
-                break;;
+                mode = 0;
+                break;
             }
                 
             case 5:{
                 //EXEx
                 //rbx failo pavadinimas
-                //x - parametru blokas
+                //x - parametru blokas esantis rax
                 //paleidziam nauja programa
+                //tiesiog galim tuos parametrus perkopijuot i supervizorines paskutine eilute
 
-                // nuskaitom programa
-                channelDevice->setNAME(rbx);
-                channelDevice->setST(3) ;//is isorines
+                si = 0;
+                channelDevice->setST(1); //is vartotojo
                 channelDevice->setDT(2); //i supervizorine
-                channelDevice->setRNUM(256); //16
+                uint16_t number = userMemory[(ptr)*16 + (rax)];
+                channelDevice->setSB(number);
+                channelDevice->setDB(31);
                 channelDevice->setOFF(0);
-                channelDevice->setDB(0);
-                channelDevice->setSB(0);
-                channelDevice->xchg();
-
-                convertTextToProgram();
-
-                allocateMemoryForVirtualMachine();
-
-                channelDevice->setST(2); //is supervizorines
-                channelDevice->setDT(1); //i vartotojo
                 channelDevice->setRNUM(16);
-
-                virtualMachine = new VirtualMachine(rax, rbx, ds, cs, pc, sf, *this);
-                uint32_t pageTable[16];
-
-                for(int i = 0; i < 16; i++){
-                    pageTable[i] = userMemory[ptr * 16 + i];
-                }
-
-
-                for(int i = 0; i < 16; ++i){
-                    channelDevice->setSB(i);
-                    channelDevice->setDB(pageTable[i]);
-                    channelDevice->xchg();
-                }
-
-                if(test_() != 0){
-                    cout << "interupttas po perkopijavmo" << endl;
-                }
-
-                pi = 0;
-                pc = 48;
-                while(1){
-                    int i = pc / 16;
-                    int j = pc % 16;
-
-                    uint32_t command = userMemory[pageTable[i]*16+j];
-                    command = ((command & 0x000000FF) << 24) |  // Byte 0 -> Byte 3
-                      ((command & 0x0000FF00) << 8)  |  // Byte 1 -> Byte 2
-                      ((command & 0x00FF0000) >> 8)  |  // Byte 2 -> Byte 1
-                      ((command & 0xFF000000) >> 24);
-                    //cout << "0x" << std::hex << command << std::dec << endl;
-                    // cout << "Program counter: " << "0x" << std::hex << pc << std::dec << endl;
-                    ++pc;
-                    virtualMachine->runNextCommand(command);
-                    //printAllRegisterValues();
-                    //next - taisyt ka irasom i rbx, nes cia buvo tekstas - rbx irgi reik atvaizduto kaip tekst
-                    if(test_() != 0){
-                        //cout << "interupttas ye" << endl;
-                        si = 0;
-                        pi = 0;
-                        break;
-                    }
-                    si = 0;
-                }
-
-
-
+                channelDevice->xchg();
+                rm_run(rbx);
                 si = 0;
                 break;
             }
@@ -610,5 +582,6 @@ int RealMachine::test_(){
     if(ti == 0){
         //change to other program
     }
+    mode = 0;
     return 0;
 }
