@@ -281,11 +281,18 @@ void RealMachine::rm_run(uint32_t name){ // ar nereiktu kaip parametro paduot pa
     channelDevice->setDB(0);
     channelDevice->setSB(0);
     channelDevice->xchg();
+    cout << "Real machine naujas paleidimas 0x" << hex << setw(8) << setfill('0') << name << " " << dec;
+    //cout <<"Real machine naujas paleidimas: " << name << endl;
 
     if(convertTextToProgram() != 0){ //validacija
         return;
     }
     allocateMemoryForVirtualMachine();
+    if(pi > 0){
+        if (test_() != 0){
+            return;
+        }
+    }
     channelDevice->setST(2); //is supervizorines
     channelDevice->setDT(1); //i vartotojo
     channelDevice->setRNUM(16);
@@ -302,12 +309,13 @@ void RealMachine::rm_run(uint32_t name){ // ar nereiktu kaip parametro paduot pa
         channelDevice->setDB(pageTable[i]); //i kuri takeli kopijuojam
         channelDevice->xchg();
     }
+    //printAsASCII(userMemory, 1632);
 
     if(test_() != 0){
         cout << "interupttas po perkopijavmo" << endl;
         return;
     }
-    pc = 48;
+    pc = 0x30;
     pi = 0;
     mode = 0;
     while(1){
@@ -318,10 +326,13 @@ void RealMachine::rm_run(uint32_t name){ // ar nereiktu kaip parametro paduot pa
         ++pc;
         virtualMachine->runNextCommand(command);
 
-        if(test_() != 0){
-            break;
+        if(si + pi > 0 || ti == 0){ //
+            if (test_() != 0){
+                return;
+            }
+            //break;
         }
-        si = 0;
+        //si = 0;
     }
 }
 
@@ -443,6 +454,11 @@ void RealMachine::allocateMemoryForVirtualMachine(){
     int temp[17];
     srand(time(nullptr));
     int randomIndex;
+    if(occupiedBlocks.size() == 102){
+        cout << "There is no free memory.\n";
+        changePI(5);
+        return;
+    }
     for(int i = 0; i < 17; ++i){ 
         randomIndex = rand() % freeBlocks.size();
         uint32_t newPageNumber = freeBlocks.at(randomIndex);
@@ -489,6 +505,10 @@ int RealMachine::test_(){
         switch (si){
             case 1:{
                 //HALT
+                freeMemoryFromVirtualMachine();
+                for(int i = 0; i < freeBlocks.size(); ++i){
+                    cout << freeBlocks.at(i) << " ";
+                }
                 return 1; //paleist kita programa arba baigt darba
             }
                 
@@ -569,6 +589,11 @@ int RealMachine::test_(){
             case 4:{
                 cout << "Division from 0." << endl;
                 return -1;
+            }
+            case 5:{
+                cout << "Can't allocate memory for new virtual machine.\n";
+                
+                return -2;
             }
             default:
                 break;

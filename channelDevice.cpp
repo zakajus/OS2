@@ -107,6 +107,7 @@ void ChannelDevice::copyFromExternalMemory(uint32_t* dest) {
                 return;
             }
             uint32_t fileNameValue = *((uint32_t*)temp);
+            //cout << fileNameValue << endl;
             if(fileNameValue == name) {
                 break;
             }

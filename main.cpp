@@ -46,62 +46,71 @@ int main() {
 
     int choice = 0;
     char c;
-
-    
-    cout << "Do you want to enter program name? \n[0] - no \n[1] - yes\n";
-    cin >> choice;
-    cin.ignore();
-
-    if(choice){
-        cout << "Enter program name:\n";
-        string nameStr;
-        cin >> nameStr;
+    while(1){   
+        cout << "Do you want to enter program name? \n[0] - no \n[1] - yes\n [3] - exit\n";
+        cin >> choice;
         cin.ignore();
 
-        if(nameStr.length() == 4){
-            name = (uint32_t(nameStr[0]) << 24) |
-           (uint32_t(nameStr[1]) << 16) |
-           (uint32_t(nameStr[2]) << 8)  |
-           uint32_t(nameStr[3]);
-           realMachine.reverseBytesInWord(name);
-        } else {
-            cout << "Invalid name! Using default.\n";
-            name = 0x315A5650;
+        if(choice == 3){
+            break;
         }
-    }
 
-    cout << "Choose mode:\n [1] - stepping \n [2] - normal\n";
-    cin >> choice;
-    cin.ignore();
+        if(choice){
+            cout << "Enter program name:\n";
+            string nameStr;
+            cin >> nameStr;
+            cin.ignore();
 
-    if(choice == 1){
-        realMachine.setEverythingForSteppingMode(name);
-        cout << "Stepping mode: Press SPACE to continue, or 'q' to quit\n";
-        while(1){
-            if(realMachine.stepIntoNextCommand() != 0){
-                break;
-            }
-            
-            realMachine.printAllRegisterValues();
-            //realMachine.printCurrentPage();
-            uint32_t nextCommand = realMachine.getNextWord();
-            //cout << "\nNext command: ";
-            //cout << "0x" << hex << setw(8) << setfill('0') << nextCommand << dec << "\n" ;
-            cout.flush();
-            c = getKeyPress();  // Changed from getch()
-            
-            
-            if(c == ' '){
-                continue;
-            }
-            else if(c == 'q' || c == 'Q'){
-                break;
+            if(nameStr.length() == 4){
+                name = (uint32_t(nameStr[0]) << 24) |
+            (uint32_t(nameStr[1]) << 16) |
+            (uint32_t(nameStr[2]) << 8)  |
+            uint32_t(nameStr[3]);
+            realMachine.reverseBytesInWord(name);
+            } else {
+                cout << "Invalid name! Using default.\n";
+                name = 0x315A5650;
             }
         }
+
+        cout << "Choose mode:\n [1] - stepping \n [2] - normal\n [3] - exit\n";
+        cin >> choice;
+        cin.ignore();
+
+        if(choice == 1){
+            realMachine.setEverythingForSteppingMode(name);
+            cout << "Stepping mode: Press SPACE to continue, or 'q' to quit\n";
+            while(1){
+                if(realMachine.stepIntoNextCommand() != 0){
+                    break;
+                }
+                
+                realMachine.printAllRegisterValues();
+                realMachine.printCurrentPage();
+                uint32_t nextCommand = realMachine.getNextWord();
+                cout << "\nNext command: ";
+                cout << "0x" << hex << setw(8) << setfill('0') << nextCommand << dec << "\n" ;
+                cout.flush();
+                c = getKeyPress();  // Changed from getch()
+                
+                
+                if(c == ' '){
+                    continue;
+                }
+                else if(c == 'q' || c == 'Q'){
+                    break;
+                }
+            }
+        }
+        if(choice == 2){
+            realMachine.rm_run(name);
+        }
+        if(choice == 3){
+            break;
+        }
     }
-    if(choice == 2){
-        realMachine.rm_run(name);
-    }
+    
+    
 
     
 

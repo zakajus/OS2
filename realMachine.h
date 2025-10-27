@@ -50,8 +50,6 @@ public:
 
     void changeSI(uint8_t i);
     void changePI(uint8_t i);
-    void changeTI(uint8_t i);
-    void reduceTI(uint8_t i);
 
     void rm_run(uint32_t name);
     void setEverythingForSteppingMode(uint32_t name);
