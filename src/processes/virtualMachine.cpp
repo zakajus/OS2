@@ -1,5 +1,5 @@
 #include "virtualMachine.h"
-#include "realMachine.h"
+#include "../components/realMachine.h"
 
 using namespace std;
 

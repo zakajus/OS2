@@ -12,7 +12,7 @@
 
 
 class ChannelDevice;
-#include "virtualMachine.h"
+#include "../processes/virtualMachine.h"
 
 using namespace std;
 

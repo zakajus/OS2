@@ -1,9 +1,9 @@
 #include <iostream>
 
 using namespace std;
-#include "realMachine.h"
-#include "monitor.h"
-#include "keyboard.h"
+#include "components/realMachine.h"
+#include "components/monitor.h"
+#include "components/keyboard.h"
 
 
 #ifdef _WIN32
