@@ -3,12 +3,11 @@ project(OS2)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(OS2 main.cpp
-        channelDevice.cpp
-        hardDisk.cpp
-        keyboard.cpp
-        monitor.cpp
-        realMachine.cpp
-        virtualMachine.cpp
+add_executable(OS2 src/main.cpp
+        src/components/channelDevice.cpp
+        src/components/keyboard.cpp
+        src/components/monitor.cpp
+        src/components/realMachine.cpp
+        src/processes/virtualMachine.cpp
         )
 
