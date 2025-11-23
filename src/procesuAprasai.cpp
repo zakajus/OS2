@@ -4,6 +4,7 @@
 using namespace std;
 
 class Process{
+    public:
     ProcessList* kokiamSarasuiPriklauso; //procesų sąrašas, kuriam priklauso procesas.
         // Tai gali būti pasiruošusių procesų sąrašas arba blokuotų,
         // dėl kokio nors resurso, procesų sąrašas. 
@@ -22,6 +23,7 @@ class Process{
 };
 
 class ProcessList{
+    public:
     Kernel* branduolys; //Nuoroda į branduolį
     vector<Process> procesai; //Dinaminis procesų sąrašas. 
     uint32_t procesuSkaicius;  //Procesų skaičius procesų masyve.
@@ -35,6 +37,7 @@ struct StatusFlag{
 };
 
 class SavedRegisters{
+    public:
     uint32_t rax;   // bendros paskirties
     uint32_t rbx;   // bendros paskirties
     uint8_t mode;   // darbo rezimas: 0 - vartotojas, 1 - supervizorius
@@ -54,6 +57,7 @@ class Element;
 class RealMachine;
 
 class Kernel{
+    public:
     vector<Process> procesai; //Bendras visų, esančių sistemoje, procesų sąrašas
     vector<Resource> sukurtiResursai; //Bendras visų, sistemoje esančių, resursų sąrašas
     vector<Process> pasiruoseProcesai; //Pasiruošusių procesų sąrašas
