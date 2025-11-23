@@ -50,6 +50,17 @@ public:
 
     void changeSI(uint8_t i);
     void changePI(uint8_t i);
+    uint8_t getSI();
+    uint8_t getPI();
+    uint8_t getTI();
+    ChannelDevice* getPointerToChannelDevice(){
+        return channelDevice;
+    }
+
+    VirtualMachine* createVirtualMachine(){
+        return new VirtualMachine(rax, rbx, ds, cs, pc, sf, *this);
+    }
+
 
     void rm_run(uint32_t name);
     void setEverythingForSteppingMode(uint32_t name);
@@ -61,9 +72,22 @@ public:
     
     void allocateMemoryForVirtualMachine();
     void freeMemoryFromVirtualMachine();
+    void setMode(uint8_t mode){
+        this->mode = mode;
+    }
 
     uint32_t getWordFromMemory(int number);
     uint32_t getNextWord();
+    uint32_t getPtr(){
+        return ptr;
+    }
+
+    bool isInterruptNeeded(){
+        if(si + pi > 0 || ti == 0){ //
+            return true;
+        }
+        return false;
+    }
 
     void saveWordToMemoryFromAx(int number);
     void saveWordToMemoryFromBx(int number);

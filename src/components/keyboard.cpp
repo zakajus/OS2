@@ -2,7 +2,7 @@
 #include <string>
 
 uint8_t Keyboard::getKey(){
-
+    return 0;
 }
 
 void Keyboard::getBytes(uint32_t* dest, uint32_t words){

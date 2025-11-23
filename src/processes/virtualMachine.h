@@ -57,6 +57,10 @@ class VirtualMachine
     public:
         VirtualMachine(uint32_t &rax, uint32_t &rbx,  uint16_t &ds, uint16_t &cs, uint16_t &pc, StatusFlag &sf, RealMachine &realMachine);
 
+
+        uint16_t getPc(){
+            return *pc;
+        }
         void add(uint8_t x, uint8_t y) ;
         void substract(uint8_t x, uint8_t y) ;
         void multiply(uint8_t x, uint8_t y) ;
