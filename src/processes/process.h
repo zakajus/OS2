@@ -54,6 +54,7 @@ class Process{
     
     vector<Resource> sukurtiResursai;
     vector<Resource> perduotiResursai;
+    vector<Resource*> turimiResursai;
 
     Process(uint32_t vardas, uint32_t isorinisVardas, uint8_t prioritetas,
             ProcessList* kokiamSarasuiPriklauso, Process* tevas,
@@ -69,15 +70,16 @@ class Process{
         registrai = {};
     }
 
-    Resource* arTuriResursa(ResourceType resourcetype){
+    bool arTuriResursa(ResourceType resourcetype){
         Resource* resursas = ResursuPrimityvai::prasytiResurso(resourcetype, this);
-        // if(resursas egzistuoja ){
-        //     return resursas;
-        // }
-        // else{
-        //     return nullptr;
-        // }
-        return nullptr;
+        if(resursas != nullptr){
+            turimiResursai.push_back(resursas);
+            return true;
+        }
+        else{
+            return false;
+        }
+        
 
     }
 
