@@ -3,10 +3,8 @@
 #include "resource.h"
 
 using namespace std;
-
-
-
 class ResursoPaskirstytojas{
+    public:
     ResourceType tipas;
     uint8_t laivuResursuKiekis;
     ProcessList* procesaiLaukiantysResurso;

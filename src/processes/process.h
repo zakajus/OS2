@@ -5,8 +5,8 @@
 #include <cstdint>
 
 #include "../resursuPrimityvai.h"
-#include "../resource.h"
-#include "../components/realMachine.h"
+#include "../src/resource.h"
+#include "../OS2/src/components/realMachine.h"
 
 using namespace std;
 
@@ -80,10 +80,16 @@ class Process{
         else{
             return false;
         }
+        
+
     }
+
+    
+    
 };
 
 class ProcessList{
+    public:
     Kernel* branduolys; //Nuoroda į branduolį
     vector<Process> procesai; //Dinaminis procesų sąrašas. 
     uint32_t procesuSkaicius;  //Procesų skaičius procesų masyve.
