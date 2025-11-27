@@ -4,11 +4,16 @@
 #include <vector>
 #include <cstdint>
 
-#include "../resursuPrimityvai.h"
-#include "../src/resource.h"
+#include "../OS2/src/resursuPrimityvai.h"
 #include "../OS2/src/components/realMachine.h"
+#include "../OS2/src/processes/resource.h"
 
 using namespace std;
+
+class Procesor;
+class Resource;
+class Element;
+class RealMachine;
 
 enum class Busena : uint8_t {
 	EXECUTING,
@@ -18,28 +23,55 @@ enum class Busena : uint8_t {
 	READY_STOPPED
 };
 
-enum class ResourceType : uint16_t {
-	isVartotojoSasajos,
-	kanaluIrenginys,
-	vartotojoAtmintis,
-	supervizorineAtmintis,
-	isorineAtmintis,
-	uzduotisSupervizorinejeAtmintyje,
-	uzduotisBugne, 
-	MOSpabaiga,
-	eiluteAtmintyje,
-	isInterrupt, 
-	neegzistuojantis,
-	pertraukimas, 
-	naujosProgramosPaleidimas
+enum class ProcesuTipai : uint8_t{
+    startStop,
+    interrupt,
+    virtualMachineProcess,
+    jobGovernor, 
+    mainProc,
+    loadNewProgram, 
+    printLine, 
+    idle, 
+    readFromInterface,
+    jcl
 };
+
+class SavedRegisters{
+    public:
+    uint32_t rax;   // bendros paskirties
+    uint32_t rbx;   // bendros paskirties
+    uint8_t mode;   // darbo rezimas: 0 - vartotojas, 1 - supervizorius
+    uint16_t ds;    // duomenu segmentas
+    uint16_t cs;    // kodo segmentas
+    uint16_t pc;    // programos counteris
+    uint16_t ti;    // timeris
+    uint8_t pi;     // programiniu pertraukimu registras
+    uint8_t si;     // supervizoriniu pertraukimu registras
+    StatusFlag sf;  // pozymiu registras
+    uint32_t ptr;   // puslapiu lentele
+
+    SavedRegisters(uint32_t rax, uint32_t rbx, uint8_t mode, uint16_t ds, uint16_t cs, uint16_t pc, uint16_t ti, uint8_t pi, uint8_t si, StatusFlag sf, uint32_t ptr){
+        this->rax = rax;
+        this->rbx = rbx;
+        this->mode = mode;
+        this->ds = ds;
+        this->cs = cs;
+        this->pc = pc;
+        this->ti = ti;
+        this->pi = pi;
+        this->si = si;
+        this->sf = sf;
+        this->ptr = ptr;
+    }
+    SavedRegisters() : rax(0), rbx(0), mode(1), ds(0), cs(48), pc(0), ti(10), pi(0), si(0), ptr(0){}
+};
+
 
 
 
 class Process{
     public:
     uint32_t vardas;
-    uint32_t isorinisVardas;
     Busena busena; 
     uint8_t prioritetas;
 
@@ -57,18 +89,17 @@ class Process{
     vector<Resource> perduotiResursai;
     vector<Resource*> turimiResursai;
 
-    Process(uint32_t vardas, uint32_t isorinisVardas, uint8_t prioritetas,
+    Process(uint32_t vardas, uint8_t prioritetas,
             ProcessList* kokiamSarasuiPriklauso, Process* tevas,
             Procesor* nuorodaIProcesoriu, Kernel* branduolys)
         : vardas(vardas),
-          isorinisVardas(isorinisVardas),
           prioritetas(prioritetas),
           busena(Busena::BLOCKED),
           kokiamSarasuiPriklauso(kokiamSarasuiPriklauso),
           tevas(tevas),
           nuorodaIProcesoriu(nuorodaIProcesoriu),
           branduolys(branduolys){
-        registrai = {};
+        registrai = branduolys->realiMasina->getRegisterValues();
     }
 
     bool arTuriResursa(ResourceType resourcetype){
@@ -83,6 +114,15 @@ class Process{
         
 
     }
+
+    void saveRegistersToMemory(){
+        this->registrai = branduolys->realiMasina->getRegisterValues();
+    }
+
+    void setRegistersInRealMachine(){
+        branduolys->realiMasina->setRegisters(registrai);
+    }
+
 
     
     
@@ -102,25 +142,8 @@ struct StatusFlag{
     unsigned int zf : 1; //zero flag
 };
 
-class SavedRegisters{
-    public:
-    uint32_t rax;   // bendros paskirties
-    uint32_t rbx;   // bendros paskirties
-    uint8_t mode;   // darbo rezimas: 0 - vartotojas, 1 - supervizorius
-    uint16_t ds;    // duomenu segmentas
-    uint16_t cs;    // kodo segmentas
-    uint16_t pc;    // programos counteris
-    uint16_t ti;    // timeris
-    uint8_t pi;     // programiniu pertraukimu registras
-    uint8_t si;     // supervizoriniu pertraukimu registras
-    StatusFlag sf;  // pozymiu registras
-    uint32_t ptr;   // puslapiu lentele
-};
 
-class Procesor;
-class Resource;
-class Element;
-class RealMachine;
+
 
 class Kernel{
     public:

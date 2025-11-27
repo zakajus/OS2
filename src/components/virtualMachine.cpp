@@ -13,6 +13,16 @@ VirtualMachine::VirtualMachine(uint32_t &rax, uint32_t &rbx,  uint16_t &ds, uint
     this->realMachine = &realMachine;
 }
 
+VirtualMachine::VirtualMachine(VirtualMachineRegisters& registers, RealMachine& realMachine){
+    this->rax = registers.rax;
+    this->rbx = registers.rbx;
+    this->ds = registers.ds;
+    this->cs = registers.cs;
+    this->pc = registers.pc;
+    this->sf = registers.sf;
+    this->realMachine = &realMachine;
+}
+
 
 void VirtualMachine::add(uint8_t x,  uint8_t y)  { 
     int realAddress = realMachine->translateLocalAdressToRealAddress(x, y);

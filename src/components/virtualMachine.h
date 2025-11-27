@@ -3,12 +3,13 @@
 #include <iostream>
 #include <cstdint>
 
+
 // Dar nenaudoju nes kazkoki errora meta, bet paliekus
 enum class Opcode : uint32_t {
     // 4-byte opcodes
     HALT = 0x48414C54,
     CMP  = 0x434D505F,
-    AND  = 0x414E445F,
+    AND  = 0x414E445F, 
     OR   = 0x4F525F5F,
     NOT  = 0x4E4F545F,
     READ = 0x52454144,
@@ -43,6 +44,24 @@ struct StatusFlag{
     //loginimo flagas arba klassee
 };
 
+class VirtualMachineRegisters{
+    public:
+    uint32_t* rax; 
+    uint32_t* rbx;  
+    uint16_t* ds;
+    uint16_t* cs; 
+    uint16_t* pc; 
+    StatusFlag* sf;
+
+    VirtualMachineRegisters(uint32_t &rax, uint32_t &rbx,  uint16_t &ds, uint16_t &cs, uint16_t &pc, StatusFlag &sf){
+        this->rax = &rax;
+        this->rbx = &rbx;
+        this->ds = &ds;
+        this->cs = &cs;
+        this->pc = &pc;
+        this->sf = &sf;  
+    }
+};
 class VirtualMachine
 {
     private:
@@ -56,11 +75,16 @@ class VirtualMachine
         uint32_t memory[256];
     public:
         VirtualMachine(uint32_t &rax, uint32_t &rbx,  uint16_t &ds, uint16_t &cs, uint16_t &pc, StatusFlag &sf, RealMachine &realMachine);
-
+        VirtualMachine(VirtualMachineRegisters& registers, RealMachine& realMachine);
 
         uint16_t getPc(){
             return *pc;
         }
+
+        void incrementPc(){
+            (*pc)++;
+        }
+
         void add(uint8_t x, uint8_t y) ;
         void substract(uint8_t x, uint8_t y) ;
         void multiply(uint8_t x, uint8_t y) ;

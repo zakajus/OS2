@@ -14,6 +14,22 @@ class Keyboard;
 
 using namespace std;
 
+enum class STisKurKopijuojam : uint8_t{
+    vartotojoAtmintis = 1,
+    supervizorineAtmintis,
+    isorineAtmintis,
+    ivedimoSrautas,
+    registrasRbx,
+    eiluteAtmintyjeResursai
+};
+
+enum class DTiKurKopijuojam : uint8_t{
+    vartotojoAtmintis = 1,
+    supervizorineAtmintis,
+    isvedimoSrautas,
+    registrasRbx
+};
+
 class ChannelDevice {
 private:
     uint16_t sb;
@@ -36,6 +52,10 @@ private:
     const size_t supervisorMemSize = 512; 
     const size_t BLOCK_SIZE = 16; 
 
+    string eilutesAtmintyje[10] = {"Įvesta sisteminė komanda neegzistuoja\n", "Tokia komanda neegzistuoja, įveskite >boom, norėdami išjungti operacinę sistemą, arba .XXXX norėdami paleisti programą, kur XXXX - programos pavadinimas.\n",
+    "Programinis pertraukimas: neteisingas adresas.\n", "Programinis pertraukimas: neteisingas operacijos kodas", "Programinis pertraukimas: neteisingas priskyrimas", "Programinis pertraukimas: dalyba iš 0.\n", 
+    "Neatpažintas pertraukimas\n", "Bloko $AMJ trūkumas, atmintis: supervizorinė.\n", "Bloko $END trūkumas, atmintis: supervizorinė.\n",  "Nuskaityta tuščia programa, atmintis: supervizorinė.\n"}; 
+
 public:
      ChannelDevice(RealMachine* realMachine, uint32_t* userMemory, uint32_t* supervisorMemory, Monitor* monitor, Keyboard* keyboard) 
         : sb(0), db(0), off(0), rnum(0), name(0), st(1), dt(1), isNumber(0),
@@ -52,7 +72,7 @@ public:
     void setNAME(uint32_t value) { name = value; }
     void setIsNumber(uint8_t value) {isNumber = value;}
     void setST(uint8_t value) { 
-        if (value < 1 || value > 5) 
+        if (value < 1 || value > 6) 
             realMachine->changePI(3);
         st = value; 
     }
@@ -62,16 +82,17 @@ public:
         dt = value; 
     }
 
-    void copyFromUserMemory(uint32_t* dest, uint32_t offset);//patikrint
+    void copyFromUserMemory(uint32_t* dest, uint32_t offset);
     void copyFromSupervisorMemory(uint32_t* dest, uint32_t offset); 
     void copyFromExternalMemory(uint32_t* dest); 
-    void copyFromInputStream(uint32_t* dest); //TAISYT
-    void copyFromRbx(uint32_t* dest);//patikrint
+    void copyFromInputStream(uint32_t* dest); 
+    void copyFromRbx(uint32_t* dest);
+    void copyFromEiluteAtmintyje();
 
     void copyToUserMemory(uint32_t offset, const uint32_t* src); 
     void copyToSupervisorMemory(uint32_t offset, const uint32_t* src); 
     void copyToOutputStream(uint32_t* src); 
-    void copyToRbx(const uint32_t* src); //patikrint
+    void copyToRbx(const uint32_t* src); 
     void xchg();
     
 };

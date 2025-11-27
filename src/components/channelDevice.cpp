@@ -31,6 +31,10 @@ void ChannelDevice::xchg(){
             copyFromRbx(buffer.data());
             break;
         }
+        case 6:{
+
+            break;//eilute atmintyje resursas - TO DO
+        }
         default:{
             realMachine->changePI(3);
             break;
@@ -84,7 +88,8 @@ void ChannelDevice::copyFromExternalMemory(uint32_t* dest) {
         return;
     }
 
-    uint8_t buffer[rnum*4];
+    //uint8_t buffer[rnum*4];
+    vector<uint8_t> buffer(rnum * 4);
     uint8_t temp[4];
     uint8_t target[4] = {'*', '*', '*', '*'};
 
@@ -113,13 +118,13 @@ void ChannelDevice::copyFromExternalMemory(uint32_t* dest) {
             }
         }
     }
-    file.read((char*)buffer, rnum*4);
+    file.read((char*)buffer.data(), rnum*4);
     streamsize bytesRead = file.gcount();
     
     if(bytesRead != rnum*4) {
         cerr << "Warning: Only read " << bytesRead << " bytes out of " << rnum*4 << endl;
     }
-    memcpy(dest, buffer, bytesRead); 
+    memcpy(dest, buffer.data(), bytesRead); 
 
     file.close();
 }
